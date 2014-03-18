@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Beard.Monads</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>Beard.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
@@ -15,10 +15,10 @@
       
     </summary>
     <language>en-US</language>
+    <projectUrl>http://github.com/khanage/beard.monads</projectUrl>
     <iconUrl>https://raw.github.com/khanage/beard.monads/master/beard.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
-    <copyright>Copyright Khan Thompson 2014</copyright>
     <references></references>
   </metadata>
   <files>

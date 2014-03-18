@@ -7,6 +7,14 @@ Currently only provides Option and Either, as they are usefull for error checkin
 
 Note: `Select` (aka `fmap`) has been renamed to `Map` to avoid confusion for C# developers. If you don't think this is a good idea, please raise an issue.
 
+### Installation
+
+Beard.Monads is available from NuGet:
+
+`Install-Package Beard.Monads`
+
+Then, just add `using Beard.Monads;` to the top of your C# source file.
+
 ## Option
 
 An obvious implementation which provides various helper methods. This allows you to avoid passing back `null` from methods and perfoming some special logic. By using `Option`, you enable the compiler to check that you've handled the missing case.

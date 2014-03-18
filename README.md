@@ -15,6 +15,7 @@ An obvious implementation which provides various helper methods. This allows you
 
 As an academic example, consider a trivial method that might have looked thusly without Option:
 
+```c#
     public bool TryParseInt(string input, out int output)
     {
         output = default(int);
@@ -27,9 +28,11 @@ As an academic example, consider a trivial method that might have looked thusly 
 
         return false;
     }
+```
 
 Can now be transformed into something a little more sane:
 
+```c#
     public Option<int> TryParseInt(string input
     {
         var i = default(int);
@@ -38,9 +41,11 @@ Can now be transformed into something a little more sane:
         // Note the implicit operator that converts the `A` to an `Option<A>`
         return i;
     }
+```
 
 As a more realistic example, imagine loading something from a database:
 
+```c#
     public MyEntity LoadEntityBy(int id)
     {
         // Please excuse this code, it's been awhile since I've used these types.
@@ -59,9 +64,11 @@ As a more realistic example, imagine loading something from a database:
             return _mapper.From(reader).To(new MyEntity());
         }
     }
+```
 
 Becomes:
 
+```c#
     public Option<MyEntity> LoadEntityBy(int id)
     {
         // Please excuse this code, it's been awhile since I've used these types.
@@ -80,9 +87,11 @@ Becomes:
             return _mapper.From(reader).To(new MyEntity());
         }
     }
+```
 
 This doesn't seem to add much, but if you compose them:
 
+```c#
     public void LoadEntity(string fromPossibleId)
     {
         var maybeEntity = from id in TryParseInt(fromPossibleId)
@@ -90,6 +99,7 @@ This doesn't seem to add much, but if you compose them:
                           select entity;
         // This will shortcircuit if none of these work.
     }
+```
 
 ## Either
 
@@ -103,6 +113,7 @@ This is useful to return some error condition from a long chain of Either result
 
 For example, if I have the following chain of optional results:
 
+```c#
     public Option<ResultFromTertiaryService> LoadFromAMultitudeOfServices(string value)
     {
         return from id in TryParseInt(value)
@@ -111,9 +122,11 @@ For example, if I have the following chain of optional results:
                from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context)
                select third;
     }
+```
 
 This might fail at any point, so it's helpful to *tag* the `None` with some helpful context, e.g.
 
+```c#
     public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitudeOfServices(string value)
     {
         return from id in TryParseInt(value).AsEither("Failed to parse ({0}) into an id", value)
@@ -122,3 +135,4 @@ This might fail at any point, so it's helpful to *tag* the `None` with some help
                from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context).AsEither("Failed to load from tertiary source")
                select third;
     }
+```

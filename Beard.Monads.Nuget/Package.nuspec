@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Beard.Monads</id>
+    <version>1.0.0</version>
+    <title>Beard.Monads</title>
+    <authors>khanage@gmail.com</authors>
+    <description>
+      A place to put various monads that are useful in general C# programming.
+    </description>
+    <releaseNotes>
+      Initial release with Option and Either which functors between them.
+    </releaseNotes>
+    <summary>
+      
+    </summary>
+    <language>en-US</language>
+    <iconUrl>https://raw.github.com/khanage/beard.monads/master/beard.jpg</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Copyright Khan Thompson 2014</copyright>
+    <references></references>
+  </metadata>
+  <files>
+    <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>

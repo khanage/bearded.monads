@@ -16,89 +16,89 @@ An obvious implementation which provides various helper methods. This allows you
 As an academic example, consider a trivial method that might have looked thusly without Option:
 
 ```c#
-    public bool TryParseInt(string input, out int output)
+public bool TryParseInt(string input, out int output)
+{
+    output = default(int);
+    int i;
+    if(int.TryParse(string, out i))
     {
-        output = default(int);
-        int i;
-        if(int.TryParse(string, out i))
-        {
-            output = i;
-            return true;
-        }
-
-        return false;
+        output = i;
+        return true;
     }
+
+    return false;
+}
 ```
 
 Can now be transformed into something a little more sane:
 
 ```c#
-    public Option<int> TryParseInt(string input
-    {
-        var i = default(int);
-        if(!int.TryParse(input, out i))
-            return Option<int>.None;
-        // Note the implicit operator that converts the `A` to an `Option<A>`
-        return i;
-    }
+public Option<int> TryParseInt(string input
+{
+    var i = default(int);
+    if(!int.TryParse(input, out i))
+        return Option<int>.None;
+    // Note the implicit operator that converts the `A` to an `Option<A>`
+    return i;
+}
 ```
 
 As a more realistic example, imagine loading something from a database:
 
 ```c#
-    public MyEntity LoadEntityBy(int id)
+public MyEntity LoadEntityBy(int id)
+{
+    // Please excuse this code, it's been awhile since I've used these types.
+
+    using(var connection = _connectionPool.Open())
+    using(var command = connection.CreateCommand())
     {
-        // Please excuse this code, it's been awhile since I've used these types.
+        command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
+        command.Parameters.Add("id", id);
 
-        using(var connection = _connectionPool.Open())
-        using(var command = connection.CreateCommand())
-        {
-            command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
-            command.Parameters.Add("id", id);
+        var result = command.ExecuteReader();
 
-            var result = command.ExecuteReader();
+        if(result.Results == 0)
+            return null;
 
-            if(result.Results == 0)
-                return null;
-
-            return _mapper.From(reader).To(new MyEntity());
-        }
+        return _mapper.From(reader).To(new MyEntity());
     }
+}
 ```
 
 Becomes:
 
 ```c#
-    public Option<MyEntity> LoadEntityBy(int id)
+public Option<MyEntity> LoadEntityBy(int id)
+{
+    // Please excuse this code, it's been awhile since I've used these types.
+
+    using(var connection = _connectionPool.Open())
+    using(var command = connection.CreateCommand())
     {
-        // Please excuse this code, it's been awhile since I've used these types.
+        command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
+        command.Parameters.Add("id", id);
 
-        using(var connection = _connectionPool.Open())
-        using(var command = connection.CreateCommand())
-        {
-            command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
-            command.Parameters.Add("id", id);
+        var result = command.ExecuteReader();
 
-            var result = command.ExecuteReader();
+        if(result.Results == 0)
+            return Option<MyEntity>.None;
 
-            if(result.Results == 0)
-                return Option<MyEntity>.None;
-
-            return _mapper.From(reader).To(new MyEntity());
-        }
+        return _mapper.From(reader).To(new MyEntity());
     }
+}
 ```
 
 This doesn't seem to add much, but if you compose them:
 
 ```c#
-    public void LoadEntity(string fromPossibleId)
-    {
-        var maybeEntity = from id in TryParseInt(fromPossibleId)
-                          from entity in LoadEntityBy(id)
-                          select entity;
-        // This will shortcircuit if none of these work.
-    }
+public void LoadEntity(string fromPossibleId)
+{
+    var maybeEntity = from id in TryParseInt(fromPossibleId)
+                        from entity in LoadEntityBy(id)
+                        select entity;
+    // This will shortcircuit if none of these work.
+}
 ```
 
 ## Either
@@ -114,25 +114,25 @@ This is useful to return some error condition from a long chain of Either result
 For example, if I have the following chain of optional results:
 
 ```c#
-    public Option<ResultFromTertiaryService> LoadFromAMultitudeOfServices(string value)
-    {
-        return from id in TryParseInt(value)
-               from first in ExpensiveCallToAWebServiceThatMightFail(id)
-               from second in TryAndLoadARecordFromTheDatabase(id, first.ClientData.SomeField)
-               from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context)
-               select third;
-    }
+public Option<ResultFromTertiaryService> LoadFromAMultitudeOfServices(string value)
+{
+    return from id in TryParseInt(value)
+            from first in ExpensiveCallToAWebServiceThatMightFail(id)
+            from second in TryAndLoadARecordFromTheDatabase(id, first.ClientData.SomeField)
+            from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context)
+            select third;
+}
 ```
 
 This might fail at any point, so it's helpful to *tag* the `None` with some helpful context, e.g.
 
 ```c#
-    public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitudeOfServices(string value)
-    {
-        return from id in TryParseInt(value).AsEither("Failed to parse ({0}) into an id", value)
-               from first in ExpensiveCallToAWebServiceThatMightFail(id).AsEither("Didn't find a value")
-               from second in TryAndLoadARecordFromTheDatabase(id, first.ClientData.SomeField).AsEither("Couldn't find {0} in the database", id)
-               from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context).AsEither("Failed to load from tertiary source")
-               select third;
-    }
+public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitudeOfServices(string value)
+{
+    return from id in TryParseInt(value).AsEither("Failed to parse ({0}) into an id", value)
+            from first in ExpensiveCallToAWebServiceThatMightFail(id).AsEither("Didn't find a value")
+            from second in TryAndLoadARecordFromTheDatabase(id, first.ClientData.SomeField).AsEither("Couldn't find {0} in the database", id)
+            from third in TryAndFindDataInTertiaryService(id, second.AnotherField, first.Some.Other.Context).AsEither("Failed to load from tertiary source")
+            select third;
+}
 ```

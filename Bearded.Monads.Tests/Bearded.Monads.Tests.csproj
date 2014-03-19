@@ -51,7 +51,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Beard.Monads\Bearded.Monads.csproj">
+    <ProjectReference Include="..\Bearded.Monads\Bearded.Monads.csproj">
       <Project>{C984BB2A-29D8-4BA5-AAB1-BDCDB019F587}</Project>
       <Name>Bearded.Monads</Name>
     </ProjectReference>

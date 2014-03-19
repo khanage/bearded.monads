@@ -1,4 +1,3 @@
-
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
@@ -30,3 +29,5 @@ _ReSharper*/
 Bearded.Monads.Nuget/Bearded.Monads.*.nupkg
 Bearded.Monads.Nuget/lib/NET*
 Bearded.Monads.Nuget/lib/NET*
+
+!NuGet.exe

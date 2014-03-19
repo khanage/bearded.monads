@@ -7,8 +7,8 @@
     <ProjectGuid>{DD918B0D-C0A4-4663-9BBD-25FBB0B88D70}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Beard.Monads.Tests</RootNamespace>
-    <AssemblyName>Beard.Monads.Tests</AssemblyName>
+    <RootNamespace>Bearded.Monads.Tests</RootNamespace>
+    <AssemblyName>Bearded.Monads.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -51,9 +51,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Beard.Monads\Beard.Monads.csproj">
+    <ProjectReference Include="..\Beard.Monads\Bearded.Monads.csproj">
       <Project>{C984BB2A-29D8-4BA5-AAB1-BDCDB019F587}</Project>
-      <Name>Beard.Monads</Name>
+      <Name>Bearded.Monads</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beard.Monads", "Beard.Monads\Beard.Monads.csproj", "{C984BB2A-29D8-4BA5-AAB1-BDCDB019F587}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Monads", "Beard.Monads\Bearded.Monads.csproj", "{C984BB2A-29D8-4BA5-AAB1-BDCDB019F587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beard.Monads.Tests", "Beard.Monads.Tests\Beard.Monads.Tests.csproj", "{DD918B0D-C0A4-4663-9BBD-25FBB0B88D70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Monads.Tests", "Beard.Monads.Tests\Bearded.Monads.Tests.csproj", "{DD918B0D-C0A4-4663-9BBD-25FBB0B88D70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beard.Monads.Nuget", "Beard.Monads.Nuget\Beard.Monads.Nuget.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Monads.Nuget", "Beard.Monads.Nuget\Bearded.Monads.Nuget.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C984BB2A-29D8-4BA5-AAB1-BDCDB019F587} = {C984BB2A-29D8-4BA5-AAB1-BDCDB019F587}
 	EndProjectSection

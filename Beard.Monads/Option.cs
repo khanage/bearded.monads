@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Beard.Monads
+namespace Bearded.Monads
 {
     public static class Option
     {

@@ -1,5 +1,5 @@
 ﻿#if NET35
-namespace Beard.Monads
+namespace Bearded.Monads
 {
     public class Tuple<A,B>
     {

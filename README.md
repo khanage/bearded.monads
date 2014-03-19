@@ -1,4 +1,4 @@
-Beard.Monads
+Bearded.Monads
 ============
 
 Neckbeard monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
@@ -11,9 +11,9 @@ Note: `Select` (aka `fmap`) has been renamed to `Map` to avoid confusion for C# 
 
 Beard.Monads is available from NuGet:
 
-`Install-Package Beard.Monads`
+`Install-Package Bearded.Monads`
 
-Then, just add `using Beard.Monads;` to the top of your C# source file.
+Then, just add `using Bearded.Monads;` to the top of your C# source file.
 
 ## Option
 

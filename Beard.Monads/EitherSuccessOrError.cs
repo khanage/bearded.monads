@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Beard.Monads
+namespace Bearded.Monads
 {
     public abstract class EitherSuccessOrError<Success, Error> : IEquatable<EitherSuccessOrError<Success, Error>>
     {

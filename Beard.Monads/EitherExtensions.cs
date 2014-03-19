@@ -1,6 +1,6 @@
 using System;
 
-namespace Beard.Monads
+namespace Bearded.Monads
 {
     public static class EitherExtensions
     {

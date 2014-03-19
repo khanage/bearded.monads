@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Beard.Monads.Tests
+namespace Bearded.Monads.Tests
 {
     class EitherTests
     {

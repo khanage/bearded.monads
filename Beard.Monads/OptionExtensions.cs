@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Beard.Monads
+namespace Bearded.Monads
 {
     public static class OptionExtensions
     {

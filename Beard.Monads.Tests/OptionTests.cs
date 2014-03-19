@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Beard.Monads.Tests
+namespace Bearded.Monads.Tests
 {
     class OptionTests
     {

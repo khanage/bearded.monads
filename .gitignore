@@ -27,6 +27,6 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-Beard.Monads.Nuget/Beard.Monads.*.nupkg
-Beard.Monads.Nuget/lib/NET*
-Beard.Monads.Nuget/lib/NET*
+Bearded.Monads.Nuget/Bearded.Monads.*.nupkg
+Bearded.Monads.Nuget/lib/NET*
+Bearded.Monads.Nuget/lib/NET*

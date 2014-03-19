@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Beard.Monads</id>
-    <version>1.0.1</version>
-    <title>Beard.Monads</title>
+    <id>Bearded.Monads</id>
+    <version>1.0.0</version>
+    <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
@@ -15,8 +15,8 @@
       
     </summary>
     <language>en-US</language>
-    <projectUrl>http://github.com/khanage/beard.monads</projectUrl>
-    <iconUrl>https://raw.github.com/khanage/beard.monads/master/beard.jpg</iconUrl>
+    <projectUrl>http://github.com/khanage/Bearded.Monads</projectUrl>
+    <iconUrl>https://raw.github.com/khanage/Bearded.Monads/master/beard.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <references></references>

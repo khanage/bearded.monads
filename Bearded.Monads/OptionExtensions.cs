@@ -82,5 +82,16 @@ namespace Bearded.Monads
         {
             return val ? true : Option<bool>.None;
         }
+
+        [DebuggerStepThrough]
+        public static Option<Value> MaybeGetValue<Key, Value>(this IDictionary<Key, Value> dict, Key key)
+        {
+            Value v;
+
+            if (!dict.TryGetValue(key, out v))
+                return Option<Value>.None;
+
+            return v;
+        }
     }
 }

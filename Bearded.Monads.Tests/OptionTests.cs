@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting;
 using NUnit.Framework;
 
 namespace Bearded.Monads.Tests
@@ -418,6 +419,33 @@ namespace Bearded.Monads.Tests
             var option = true.NoneIfFalse();
 
             Assert.True(option.IsSome);
+        }
+
+        [Test]
+        public void TryGetValueForPresentKey()
+        {
+            var key = "hello";
+            var expectedValue = 42;
+
+            var dict = new Dictionary<string, object> {{key, expectedValue}};
+
+            var result = dict.MaybeGetValue(key);
+            
+            Assert.That(result.IsSome);
+            Assert.That(result.Value, Is.EqualTo(expectedValue));
+        }
+
+        [Test]
+        public void TryGetValueForMissingKey()
+        {
+            var key = "hello";
+            var expectedValue = 42;
+
+            var dict = new Dictionary<string, object> {{"irrelevent", expectedValue}};
+
+            var result = dict.MaybeGetValue(key);
+            
+            Assert.That(!result.IsSome);
         }
 
         #region Monad laws

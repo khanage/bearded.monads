@@ -84,6 +84,15 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
+        public static Option<A> NoneIfEmpty<A>(this A? nullable) where A : struct 
+        {
+            if (nullable.HasValue)
+                return nullable.Value;
+
+            return Option<A>.None;
+        }
+
+        [DebuggerStepThrough]
         public static Option<Value> MaybeGetValue<Key, Value>(this IDictionary<Key, Value> dict, Key key)
         {
             Value v;

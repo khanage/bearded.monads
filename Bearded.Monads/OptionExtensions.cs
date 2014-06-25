@@ -102,5 +102,11 @@ namespace Bearded.Monads
 
             return v;
         }
+
+        [DebuggerStepThrough]
+        public static IEnumerable<A> ConcatOptions<A>(this IEnumerable<Option<A>> options)
+        {
+            return options.Where(o => o.IsSome).Select(o => o.Value);
+        }
     }
 }

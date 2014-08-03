@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Bearded.Monads</id>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
     </description>
     <releaseNotes>
-      Fix up Cast to be a member variable and add in select extension method
+      Add in maybe wrappers over TryParse methods
     </releaseNotes>
     <summary>
       

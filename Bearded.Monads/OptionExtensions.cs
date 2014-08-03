@@ -108,5 +108,19 @@ namespace Bearded.Monads
         {
             return options.Where(o => o.IsSome).Select(o => o.Value);
         }
+
+        [DebuggerStepThrough]
+        public static Option<CastTarget> MaybeCast<CastTarget>(this Object current)
+        {
+            if (current is CastTarget) return (CastTarget) current;
+
+            return Option<CastTarget>.None;
+        }
+
+        [DebuggerStepThrough]
+        public static Option<B> Select<A, B>(this Option<A> option, Func<A, B> f)
+        {
+            return option.Map(f);
+        }
     }
 }

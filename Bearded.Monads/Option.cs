@@ -119,6 +119,13 @@ namespace Bearded.Monads
             return this;
         }
 
+        [DebuggerStepThrough]
+        public Option<CastTarget> Cast<CastTarget>()
+            where CastTarget : A
+        {
+            return SelectMany(ct => ct.MaybeCast<CastTarget>());
+        }
+
         public static implicit operator Option<A>(A value)
         {
             return Return(value);

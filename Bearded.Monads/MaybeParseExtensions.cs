@@ -24,6 +24,7 @@ namespace Bearded.Monads
             return Option<float>.None;
         }
 
+#if NET4
         public static Option<A> MaybeEnum<A>(this string value, bool ignoreCase = false)
             where A : struct
         {
@@ -34,5 +35,25 @@ namespace Bearded.Monads
 
             return Option<A>.None;
         }
+#else
+        public static Option<A> MaybeEnum<A>(this string value)
+            where A : struct
+        {
+            return value.MaybeEnum<A>(false);
+        }
+
+        public static Option<A> MaybeEnum<A>(this string value, bool ignoreCase)
+            where A : struct
+        {
+            try
+            {
+                return (A)Enum.Parse(typeof(A), value, ignoreCase);
+            }
+            catch (Exception)
+            {
+                return Option<A>.None;
+            }
+        }
+#endif
     }
 }

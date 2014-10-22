@@ -80,7 +80,7 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<bool> NoneIfFalse(this bool val)
         {
-            return val ? true : Option<bool>.None;
+            return val ? (Option<bool>) true : Option<bool>.None;
         }
 
         [DebuggerStepThrough]

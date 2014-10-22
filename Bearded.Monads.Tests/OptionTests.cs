@@ -448,6 +448,15 @@ namespace Bearded.Monads.Tests
             Assert.That(!result.IsSome);
         }
 
+
+        [Test]
+        public void ImplicitCastBool()
+        {
+            bool b  = "IsSome".AsOption();
+            Assert.True(b);
+            b = Option<string>.None;
+            Assert.False(b);
+        }
         #region Monad laws
         [Test]
         public void LeftIdentity()

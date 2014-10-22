@@ -141,6 +141,11 @@ namespace Bearded.Monads
             return !value.IsSome;
         }
 
+        public static implicit operator bool(Option<A> value)
+        {
+            return value.IsSome;
+        }
+
         public bool Equals(A other)
         {
             return this.IsSome && this.Value.Equals(other);

@@ -122,5 +122,56 @@ namespace Bearded.Monads
         {
             return option.Map(f);
         }
+
+        [DebuggerStepThrough]
+        public static Option<A> SingleOrNone<A>(this IEnumerable<A> items)
+        {
+            var ret = items.Take(2).ToList();
+
+            if (ret.Count != 1)
+                return Option<A>.None;
+
+            return ret[0];
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> SingleOrNone<A>(this IEnumerable<A> items, Func<A, bool> predicate)
+        {
+            var ret = items.Where(predicate).ToList();
+
+            if (ret.Count != 1)
+                return Option<A>.None;
+
+            return ret[0];
+        }
+
+        [DebuggerStepThrough]
+        public static Option<B> SingleOrNone<A, B>(this IEnumerable<A> items, Func<A, Option<B>> thing)
+        {
+            return items.Select(thing).SingleOrNone(o => o.IsSome).Flatten();
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> FirstOrNone<A>(this IEnumerable<A> items)
+        {
+            return items.FirstOrNone(_ => true);
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> FirstOrNone<A>(this IEnumerable<A> items, Func<A, bool> predicate)
+        {
+            var firstItems = items.Where(predicate).Take(1).ToList();
+
+            if (firstItems.Count == 0)
+                return Option<A>.None;
+
+            return firstItems[0];
+        }
+
+        [DebuggerStepThrough]
+        public static Option<B> FirstOrNone<A, B>(this IEnumerable<A> items, Func<A, Option<B>> thing)
+        {
+            return items.Select(thing).FirstOrNone(o => o.IsSome).Flatten();
+        }
     }
 }

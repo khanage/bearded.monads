@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Bearded.Monads</id>
-    <version>1.0.10</version>
+    <version>1.0.13</version>
     <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
     </description>
     <releaseNotes>
-      Add in maybe wrappers over TryParse methods
+      Add operator for bool.
     </releaseNotes>
     <summary>
       

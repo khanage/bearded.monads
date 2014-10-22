@@ -15,6 +15,7 @@ namespace Bearded.Monads
     {
         public abstract A Value { [DebuggerStepThrough]get; }
         public abstract bool Equals(Option<A> other);
+        [Obsolete("Use the truthiness operators to determine whether Option has a value")]
         public abstract bool IsSome { [DebuggerStepThrough]get; }
 
         public static Option<A> None { get { return NoneOption<A>.Instance; } }
@@ -144,6 +145,21 @@ namespace Bearded.Monads
         public static implicit operator bool(Option<A> value)
         {
             return value.IsSome;
+        }
+
+        public static bool operator !(Option<A> value)
+        {
+            return !value.IsSome;
+        }
+
+        public static Option<A> operator |(Option<A> left, Option<A> right)
+        {
+            if (left)
+                return left;
+            if (right)
+                return right;
+
+            return None;
         }
 
         public bool Equals(A other)

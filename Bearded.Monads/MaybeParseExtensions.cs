@@ -24,6 +24,18 @@ namespace Bearded.Monads
             return Option<float>.None;
         }
 
+        public static Option<Uri> MaybeUri(this string value, UriKind? uriKind)
+        {
+            var kindToUse = uriKind ?? UriKind.RelativeOrAbsolute;
+
+            Uri uri;
+
+            if (Uri.TryCreate(value, kindToUse, out uri))
+                return uri;
+
+            return Option<Uri>.None;
+        }
+
 #if NET4
         public static Option<A> MaybeEnum<A>(this string value, bool ignoreCase = false)
             where A : struct

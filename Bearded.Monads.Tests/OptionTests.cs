@@ -14,7 +14,7 @@ namespace Bearded.Monads.Tests
             var option = Option.Return(someInteger);
 
             Assert.That(option.IsSome, Is.True);
-            Assert.That(option.Value, Is.EqualTo(42));
+            Assert.That(option.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace Bearded.Monads.Tests
             var option = Option<int>.None;
 
             Assert.That(option.IsSome, Is.False);
-            Assert.Throws<InvalidOperationException>(delegate { var _ = option.Value; });
+            Assert.Throws<InvalidOperationException>(delegate { var _ = option.ForceValue(); });
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace Bearded.Monads.Tests
             var resultOption = option.Map(i => i + 1);
 
             Assert.True(resultOption.IsSome);
-            Assert.That(resultOption.Value, Is.EqualTo(42));
+            Assert.That(resultOption.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace Bearded.Monads.Tests
             var optionOption = Option.Return(Option.Return(42));
             var option = optionOption.SelectMany(x => x);
 
-            Assert.That(option.Value, Is.EqualTo(42));
+            Assert.That(option.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace Bearded.Monads.Tests
 
             var option = left.Concat(right);
 
-            Assert.That(option.Value, Is.EqualTo(new Tuple<int,int>(42, 42)));
+            Assert.That(option.ForceValue(), Is.EqualTo(new Tuple<int,int>(42, 42)));
         }
 
         [Test]
@@ -237,7 +237,7 @@ namespace Bearded.Monads.Tests
 
             option.WhenSome(j => i = j);
 
-            Assert.That(i, Is.EqualTo(option.Value));
+            Assert.That(i, Is.EqualTo(option.ForceValue()));
         }
 
         [Test]
@@ -303,7 +303,7 @@ namespace Bearded.Monads.Tests
                 from b in Option.Return(21)
                 select a + b;
 
-            Assert.That(result.Value, Is.EqualTo(42));
+            Assert.That(result.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -344,7 +344,7 @@ namespace Bearded.Monads.Tests
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
-            Assert.That(result.Value, Is.EqualTo(42));
+            Assert.That(result.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -354,7 +354,7 @@ namespace Bearded.Monads.Tests
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
-            Assert.That(result.Value, Is.EqualTo(666));
+            Assert.That(result.ForceValue(), Is.EqualTo(666));
         }
 
         [Test]
@@ -372,7 +372,7 @@ namespace Bearded.Monads.Tests
             var option = true.Then(() => 42);
 
             Assert.True(option.IsSome);
-            Assert.That(option.Value, Is.EqualTo(42));
+            Assert.That(option.ForceValue(), Is.EqualTo(42));
         }
 
         [Test]
@@ -391,7 +391,7 @@ namespace Bearded.Monads.Tests
             var option = str.NoneIfNull();
 
             Assert.True(option.IsSome);
-            Assert.That(option.Value, Is.EqualTo(str));
+            Assert.That(option.ForceValue(), Is.EqualTo(str));
         }
 
         [Test]
@@ -431,7 +431,7 @@ namespace Bearded.Monads.Tests
             var result = dict.MaybeGetValue(key);
             
             Assert.That(result.IsSome);
-            Assert.That(result.Value, Is.EqualTo(expectedValue));
+            Assert.That(result.ForceValue(), Is.EqualTo(expectedValue));
         }
 
         [Test]

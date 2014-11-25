@@ -18,7 +18,7 @@ namespace Bearded.Monads
         public static EitherSuccessOrError<Success, Error> AsEither<Success, Error>(this Option<Success> option, Error errorValue)
         {
             if (option.IsSome)
-                return option.Value;
+                return option.ForceValue();
 
             return errorValue;
         }

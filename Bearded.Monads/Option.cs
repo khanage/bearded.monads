@@ -13,9 +13,8 @@ namespace Bearded.Monads
 
     public abstract class Option<A> : IEquatable<Option<A>>, IEquatable<A>
     {
-        public abstract A Value { [DebuggerStepThrough]get; }
+        public abstract A ForceValue();
         public abstract bool Equals(Option<A> other);
-        [Obsolete("Use the truthiness operators to determine whether Option has a value")]
         public abstract bool IsSome { [DebuggerStepThrough]get; }
 
         public static Option<A> None { get { return NoneOption<A>.Instance; } }
@@ -38,7 +37,7 @@ namespace Bearded.Monads
         {
             if (this.IsSome)
             {
-                return this.Value;
+                return this.ForceValue();
             }
             return callbackForNone();
         }
@@ -48,7 +47,7 @@ namespace Bearded.Monads
         {
             if (this.IsSome)
             {
-                return this.Value;
+                return this.ForceValue();
             }
             return default(A);
         }
@@ -56,7 +55,7 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public Option<B> SelectMany<B>(Func<A, Option<B>> mapper)
         {
-            return this.IsSome ? mapper(this.Value) : NoneOption<B>.Instance;
+            return this.IsSome ? mapper(this.ForceValue()) : NoneOption<B>.Instance;
         }
 
         [DebuggerStepThrough]
@@ -73,13 +72,13 @@ namespace Bearded.Monads
                 return emptyResult;
             }
 
-            return new Tuple<A, B>(this.Value, ob.Value);
+            return new Tuple<A, B>(this.ForceValue(), ob.ForceValue());
         }
 
         [DebuggerStepThrough]
         public Option<A> Where(Predicate<A> pred)
         {
-            if (this.IsSome && pred(this.Value))
+            if (this.IsSome && pred(this.ForceValue()))
             {
                 return this;
             }
@@ -103,7 +102,7 @@ namespace Bearded.Monads
         {
             if (this.IsSome)
             {
-                callback(this.Value);
+                callback(this.ForceValue());
             }
 
             return this;
@@ -164,7 +163,7 @@ namespace Bearded.Monads
 
         public bool Equals(A other)
         {
-            return this.IsSome && this.Value.Equals(other);
+            return this.IsSome && this.ForceValue().Equals(other);
         }
 
         public override bool Equals(object obj)
@@ -183,17 +182,17 @@ namespace Bearded.Monads
 
         public override int GetHashCode()
         {
-            return this.IsSome ? this.Value.GetHashCode() : 0;
+            return this.IsSome ? this.ForceValue().GetHashCode() : 0;
         }
 
         [DebuggerDisplay("Some({Value})")]
         class Some<B> : Option<B>
         {
-            readonly B value;
+            readonly B force;
 
-            public Some(B value)
+            public Some(B force)
             {
-                this.value = value;
+                this.force = force;
             }
 
             public override bool IsSome
@@ -202,30 +201,29 @@ namespace Bearded.Monads
                 get { return true; }
             }
 
-            public override B Value
+            public override B ForceValue()
             {
-                [DebuggerStepThrough]
-                get { return this.value; }
+                return this.force;
             }
 
             public override Option<C> Map<C>(Func<B, C> mapper)
             {
-                return mapper(this.Value);
+                return mapper(this.ForceValue());
             }
 
             public override void Do(Action<B> callback)
             {
-                callback(this.value);
+                callback(this.force);
             }
 
             public override void Do(Action<B> valueCallback, Action nullCallback)
             {
-                valueCallback(this.value);
+                valueCallback(this.force);
             }
 
             public override bool Equals(Option<B> other)
             {
-                return other.IsSome && this.Value.Equals(other.Value);
+                return other.IsSome && this.ForceValue().Equals(other.ForceValue());
             }
         }
 
@@ -246,10 +244,9 @@ namespace Bearded.Monads
                 get { return false; }
             }
 
-            public override B Value
+            public override B ForceValue()
             {
-                [DebuggerStepThrough]
-                get { throw new InvalidOperationException("This does not have a value"); }
+                throw new InvalidOperationException("This does not have a value");
             }
 
             public override Option<C> Map<C>(Func<B, C> mapper)

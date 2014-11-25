@@ -17,7 +17,7 @@ namespace Bearded.Monads
                 return defaultValue;
             }
 
-            var a = ma.Value;
+            var a = ma.ForceValue();
 
             var mb = mapB(a);
 
@@ -26,7 +26,7 @@ namespace Bearded.Monads
                 return defaultValue;
             }
 
-            var b = mb.Value;
+            var b = mb.ForceValue();
 
             return mapper(a, b);
         }
@@ -106,7 +106,7 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static IEnumerable<A> ConcatOptions<A>(this IEnumerable<Option<A>> options)
         {
-            return options.Where(o => o.IsSome).Select(o => o.Value);
+            return options.Where(o => o.IsSome).Select(o => o.ForceValue());
         }
 
         [DebuggerStepThrough]

@@ -103,7 +103,7 @@ namespace Bearded.Monads.Tests
 
             Assert.False(wasCalled);
             Assert.True(option.IsSome);
-            Assert.That(option.Value, Is.EqualTo(expectedSucess));
+            Assert.That(option.ForceValue(), Is.EqualTo(expectedSucess));
         }
 
         [Test]

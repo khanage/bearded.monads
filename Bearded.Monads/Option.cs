@@ -185,7 +185,7 @@ namespace Bearded.Monads
             return this.IsSome ? this.ForceValue().GetHashCode() : 0;
         }
 
-        [DebuggerDisplay("Some({Value})")]
+        [DebuggerDisplay("Some({force})")]
         class Some<B> : Option<B>
         {
             readonly B force;

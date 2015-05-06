@@ -56,5 +56,27 @@ namespace Bearded.Monads
 
             return mapper(a, b);
         }
+
+        public static EitherSuccessOrError<B, Error> Select<A, Error, B>(this EitherSuccessOrError<A, Error> either, Func<A, B> projector)
+        {
+            return either.Map(projector);
+        }
+
+        public static EitherSuccessOrError<A, Error> Where<A, Error>(this EitherSuccessOrError<A, Error> either,
+            Predicate<A> predicate, Func<Error> errorCallback)
+        {
+            if (either.IsError) return either;
+            if (predicate(either.AsSuccess.Value)) return either;
+            return errorCallback();
+        }
+
+        public static Result Else<A, Error, Result>(this EitherSuccessOrError<A, Error> either, 
+            Func<A, Result> happy,
+            Func<Error, Result> sad)
+        {
+            return either.IsSuccess 
+                ? happy(either.AsSuccess.Value)
+                : sad(either.AsError.Value);
+        }
     }
 }

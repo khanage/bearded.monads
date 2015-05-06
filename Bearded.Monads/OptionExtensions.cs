@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -172,6 +173,12 @@ namespace Bearded.Monads
         public static Option<B> FirstOrNone<A, B>(this IEnumerable<A> items, Func<A, Option<B>> thing)
         {
             return items.Select(thing).FirstOrNone(o => o.IsSome).Flatten();
+        }
+
+        public static A ElseThrow<A>(this Option<A> option, Func<Exception> exceptionCallback)
+        {
+            if (option.IsSome) return option.ForceValue();
+            throw exceptionCallback();
         }
     }
 }

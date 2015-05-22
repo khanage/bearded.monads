@@ -105,6 +105,17 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
+        public static Option<IEnumerable<Value>> MaybeGetValues<Key, Value>(this ILookup<Key, Value> lookup, Key key)
+        {
+            if (lookup.Contains(key))
+            {
+                return lookup[key].AsOption();
+            }
+
+            return Option<IEnumerable<Value>>.None;
+        }
+
+        [DebuggerStepThrough]
         public static IEnumerable<A> ConcatOptions<A>(this IEnumerable<Option<A>> options)
         {
             return options.Where(o => o.IsSome).Select(o => o.ForceValue());

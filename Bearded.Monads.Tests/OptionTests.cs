@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Bearded.Monads.Tests
@@ -446,7 +447,33 @@ namespace Bearded.Monads.Tests
             
             Assert.That(!result.IsSome);
         }
+        [Test]
+        public void TryGetValuesForPresentKey()
+        {
+            var key = "hello";
+            var expectedValues = new[] {11, 42};
 
+            var lookup = new[] {Tuple.Create("hello", 11), Tuple.Create("hello", 42)}
+                .ToLookup(t => t.Item1, t => t.Item2);
+
+            var result = lookup.MaybeGetValues(key);
+
+            Assert.That(result.IsSome);
+            Assert.That(result.ForceValue(), Is.EqualTo(expectedValues));
+        }
+
+        [Test]
+        public void TryGetValuesForMissingKey()
+        {
+            var key = "hello";
+
+            var lookup = new[] { Tuple.Create("irrelevant", 11), Tuple.Create("irrelevant", 42) }
+               .ToLookup(t => t.Item1, t => t.Item2);
+
+            var result = lookup.MaybeGetValues(key);
+
+            Assert.That(result.IsSome, Is.False);
+        }
 
         [Test]
         public void ImplicitCastBool()

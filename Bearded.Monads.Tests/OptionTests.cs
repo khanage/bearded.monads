@@ -478,7 +478,7 @@ namespace Bearded.Monads.Tests
         [Test]
         public void ImplicitCastBool()
         {
-            bool b  = "IsSome".IfTrueThen();
+            bool b  = "IsSome".AsOption();
             Assert.True(b);
             b = Option<string>.None;
             Assert.False(b);

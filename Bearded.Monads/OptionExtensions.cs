@@ -44,7 +44,7 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
-        public static Option<A> IfTrueThen<A>(this A value)
+        public static Option<A> AsOption<A>(this A value)
         {
             return value;
         }
@@ -109,7 +109,7 @@ namespace Bearded.Monads
         {
             if (lookup.Contains(key))
             {
-                return lookup[key].IfTrueThen();
+                return lookup[key].AsOption();
             }
 
             return Option<IEnumerable<Value>>.None;

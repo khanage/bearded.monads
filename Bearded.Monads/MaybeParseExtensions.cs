@@ -14,6 +14,16 @@ namespace Bearded.Monads
             return Option<int>.None;
         }
 
+        public static Option<bool> MaybeBool(this string value)
+        {
+            bool val;
+
+            if (bool.TryParse(value, out val))
+                return val;
+
+            return Option<bool>.None;
+        }
+
         public static Option<float> MaybeFloat(this string value)
         {
             int val;

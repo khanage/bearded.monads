@@ -26,9 +26,9 @@ namespace Bearded.Monads
 
         public static Option<float> MaybeFloat(this string value)
         {
-            int val;
+            float val;
 
-            if (int.TryParse(value, out val))
+            if (float.TryParse(value, out val))
                 return val;
 
             return Option<float>.None;

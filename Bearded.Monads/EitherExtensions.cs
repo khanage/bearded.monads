@@ -91,5 +91,12 @@ namespace Bearded.Monads
                 return e;
             }
         }
+
+        public static Result Unify<Success, Error, Result>(this EitherSuccessOrError<Success, Error> either,
+           Func<Success, Result> successFunc, Func<Error, Result> errorFunc)
+        {
+            if (either.IsSuccess) return successFunc(either.AsSuccess.Value);
+            return errorFunc(either.AsError.Value);
+        }
     }
 }

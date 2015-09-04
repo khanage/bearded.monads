@@ -2,16 +2,14 @@
 <package >
   <metadata>
     <id>Bearded.Monads</id>
-    <version>1.0.20</version>
+    <version>1.0.21</version>
     <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
     </description>
     <releaseNotes>
-      Add Select and Where to either.
-      Add Else to either, which acts as a unifier :: Either a b -> (a -> c) -> (b -> c) -> c
-      Add elsethrow to option.
+      Add Unify method for EitherSuccessOrError.
     </releaseNotes>
     <summary>
       

@@ -98,5 +98,35 @@ namespace Bearded.Monads
             if (either.IsSuccess) return successFunc(either.AsSuccess.Value);
             return errorFunc(either.AsError.Value);
         }
+
+        public static Success Else<Success, Error>(this EitherSuccessOrError<Success, Error> either,
+            Func<Error, Success> callback)
+        {
+            if (either.IsError) return callback(either.AsError.Value);
+
+            return either.AsSuccess.Value;
+        }
+
+        public static EitherSuccessOrError<A, Error> WhenSuccess<A, Error>(this EitherSuccessOrError<A, Error> either,
+            Action<A> callbackForSuccess)
+        {
+            if (either.IsSuccess)
+            {
+                callbackForSuccess(either.AsSuccess.Value);
+            }
+
+            return either;
+        }
+
+        public static EitherSuccessOrError<A, Error> WhenError<A, Error>(this EitherSuccessOrError<A, Error> either,
+            Action<Error> callbackForError)
+        {
+            if (either.IsError)
+            {
+                callbackForError(either.AsError.Value);
+            }
+
+            return either;
+        }
     }
 }

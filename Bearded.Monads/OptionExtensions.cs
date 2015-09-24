@@ -199,10 +199,23 @@ namespace Bearded.Monads
             return items.Select(thing).FirstOrNone(o => o.IsSome).Flatten();
         }
 
+        [DebuggerStepThrough]
         public static A ElseThrow<A>(this Option<A> option, Func<Exception> exceptionCallback)
         {
             if (option.IsSome) return option.ForceValue();
             throw exceptionCallback();
         }
+
+#if NET45
+        [DebuggerStepThrough]
+        public static Option<A> MaybeGetReference<A>(this WeakReference<A> refToItem) where A : class
+        {
+            A item;
+            if (refToItem.TryGetTarget(out item))
+                return item;
+
+            return Option<A>.None;
+        }
+#endif
     }
 }

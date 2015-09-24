@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Bearded.Monads</id>
-    <version>1.0.22</version>
+    <version>1.0.23</version>
     <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
     </description>
     <releaseNotes>
-      Add extensions over either.
+      Add maybe get over weak reference
     </releaseNotes>
     <summary>
       

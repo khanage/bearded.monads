@@ -1,5 +1,4 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -217,5 +216,11 @@ namespace Bearded.Monads
             return Option<A>.None;
         }
 #endif
+
+        [DebuggerStepThrough]
+        public static IEnumerable<A> ElseEmpty<A>(this Option<IEnumerable<A>> items)
+        {
+            return items.Else(Enumerable.Empty<A>);
+        } 
     }
 }

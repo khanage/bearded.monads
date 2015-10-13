@@ -128,5 +128,16 @@ namespace Bearded.Monads
 
             return either;
         }
+
+        public static A ElseThrow<A, TException>(this EitherSuccessOrError<A, TException> either)
+            where TException : Exception
+        {
+            return either.Else(exc => { throw exc; });
+        }
+
+        public static A ElseThrow<A>(this EitherSuccessOrError<A, string> either)
+        {
+            return either.Else(message => { throw new Exception(message); });
+        } 
     }
 }

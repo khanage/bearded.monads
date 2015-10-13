@@ -199,6 +199,70 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
+        public static Option<T> AggregateOrNone<T>(this IEnumerable<T> source, Func<T, T, T> func)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    return Option<T>.None;
+
+                var result = e.Current;
+                while (e.MoveNext())
+                    result = func(result, e.Current);
+                return result;
+            }
+        }
+
+        [DebuggerStepThrough]
+        public static Option<T> AggregateOrNone<T>(this IEnumerable<T> source, T seed, Func<T, T, T> func)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                var result = seed;
+                if (!e.MoveNext())
+                    return Option<T>.None;
+                do
+                {
+                    result = func(result, e.Current);
+                } while (e.MoveNext());
+
+                return result;
+            }
+        }
+        [DebuggerStepThrough]
+        public static Option<T> AggregateOrNone<T>(this IEnumerable<Option<T>> source, Option<T> seed, Func<Option<T>, Option<T>, Option<T>> func)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                var result = seed;
+                if (!e.MoveNext())
+                    return Option<T>.None;
+                do
+                {
+                    result = func(result, e.Current);
+                } while (e.MoveNext());
+
+                return result;
+            }
+        }
+
+        [DebuggerStepThrough]
+        public static Option<T> AggregateOrNone<T>(this IEnumerable<Option<T>> source,
+            Func<Option<T>, Option<T>, Option<T>> func)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    return Option<T>.None;
+
+                var result = e.Current;
+                while (e.MoveNext())
+                    result = func(result, e.Current);
+                return result;
+            }
+        }
+
+        [DebuggerStepThrough]
         public static A ElseThrow<A>(this Option<A> option, Func<Exception> exceptionCallback)
         {
             if (option.IsSome) return option.ForceValue();

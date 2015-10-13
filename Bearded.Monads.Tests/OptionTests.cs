@@ -476,6 +476,84 @@ namespace Bearded.Monads.Tests
         }
 
         [Test]
+        public void AggregateWithExistingMembers()
+        {
+            var list = new[] {1, 2, 3};
+
+            var result = list.AggregateOrNone((total, current) => total + current);
+
+            Assert.That(result.ForceValue(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void AggregateWithMissingMembers()
+        {
+            var list = Enumerable.Empty<int>();
+
+            var result = list.AggregateOrNone((total, current) => total + current);
+
+            Assert.That(!result.IsSome);
+        }
+
+        [Test]
+        public void AggregateWithOptions()
+        {
+            var list = new[] {1.AsOption(), 2.AsOption(), 3.AsOption()};
+
+            var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
+
+            Assert.That(result.ForceValue(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void AggregateWithOptionsAndNone()
+        {
+            var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
+
+            var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
+
+            Assert.That(!result.IsSome); ;
+        }
+
+        [Test]
+        public void AggregateWithExistingMembersAndSeed()
+        {
+            var list = new[] { 1, 2, 3 };
+
+            var result = list.AggregateOrNone(10, (total, current) => total + current);
+
+            Assert.That(result.ForceValue(), Is.EqualTo(16));
+        }
+
+        [Test]
+        public void AggregateWithMissingMembersAndSeed()
+        {
+            var list = Enumerable.Empty<int>();
+
+            var result = list.AggregateOrNone(10, (total, current) => total + current);
+
+            Assert.That(!result.IsSome);
+        }
+        [Test]
+        public void AggregateWithOptionsAndSeed()
+        {
+            var list = new[] { 1.AsOption(), 2.AsOption(), 3.AsOption() };
+
+            var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
+
+            Assert.That(result.ForceValue(), Is.EqualTo(16));
+        }
+
+        [Test]
+        public void AggregateWithOptionsAndNoneAndSeed()
+        {
+            var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
+
+            var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
+
+            Assert.That(!result.IsSome);
+        }
+        [Test]
         public void ImplicitCastBool()
         {
             bool b  = "IsSome".AsOption();

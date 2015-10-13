@@ -214,13 +214,13 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
-        public static Option<T> AggregateOrNone<T>(this IEnumerable<T> source, T seed, Func<T, T, T> func)
+        public static Option<B> AggregateOrNone<A,B>(this IEnumerable<A> source, B seed, Func<B, A, B> func)
         {
             using (var e = source.GetEnumerator())
             {
                 var result = seed;
                 if (!e.MoveNext())
-                    return Option<T>.None;
+                    return Option<B>.None;
                 do
                 {
                     result = func(result, e.Current);
@@ -230,13 +230,13 @@ namespace Bearded.Monads
             }
         }
         [DebuggerStepThrough]
-        public static Option<T> AggregateOrNone<T>(this IEnumerable<Option<T>> source, Option<T> seed, Func<Option<T>, Option<T>, Option<T>> func)
+        public static Option<B> AggregateOrNone<A,B>(this IEnumerable<Option<A>> source, Option<B> seed, Func<Option<B>, Option<A>, Option<B>> func)
         {
             using (var e = source.GetEnumerator())
             {
                 var result = seed;
                 if (!e.MoveNext())
-                    return Option<T>.None;
+                    return Option<B>.None;
                 do
                 {
                     result = func(result, e.Current);

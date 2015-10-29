@@ -128,6 +128,9 @@ namespace Bearded.Monads
 
         public static implicit operator Option<A>(A value)
         {
+            if (typeof (A).IsByRef && Equals(null, value))
+                return None;
+
             return Return(value);
         }
 

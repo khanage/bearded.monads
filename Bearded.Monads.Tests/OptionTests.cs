@@ -561,6 +561,17 @@ namespace Bearded.Monads.Tests
             b = Option<string>.None;
             Assert.False(b);
         }
+
+        [Test]
+        public void ImplicitCastNull()
+        {
+            string n = null;
+            Option<string> none = n;
+
+            Assert.False(none);
+        }
+      
+
         #region Monad laws
         [Test]
         public void LeftIdentity()

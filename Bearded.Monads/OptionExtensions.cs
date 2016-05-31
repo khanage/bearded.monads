@@ -161,18 +161,13 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<A> SingleOrNone<A>(this IEnumerable<A> items, Func<A, bool> predicate)
         {
-            var ret = items.Where(predicate).ToList();
-
-            if (ret.Count != 1)
-                return Option<A>.None;
-
-            return ret[0];
+            return items.Where(predicate).SingleOrNone();
         }
 
         [DebuggerStepThrough]
         public static Option<B> SingleOrNone<A, B>(this IEnumerable<A> items, Func<A, Option<B>> thing)
         {
-            return items.Select(thing).SingleOrNone(o => o.IsSome).Flatten();
+            return items.Select(thing).ConcatOptions().SingleOrNone();
         }
 
         [DebuggerStepThrough]

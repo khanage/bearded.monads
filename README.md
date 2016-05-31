@@ -9,7 +9,7 @@ Note: `Select` (aka `fmap`) has been renamed to `Map` to avoid confusion for C# 
 
 ### Installation
 
-Beard.Monads is available from NuGet:
+Bearded.Monads is available from NuGet:
 
 `Install-Package Bearded.Monads`
 

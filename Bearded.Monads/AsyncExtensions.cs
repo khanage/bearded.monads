@@ -1,8 +1,10 @@
+#if NET45
 using System;
 using System.Threading.Tasks;
 
 namespace Bearded.Monads
 {
+
     public static class AsyncExtensions
     {
         public static async Task<C> SelectMany<A, B, C>(this Task<A> task, Func<A, Task<B>> bind, Func<A, B, C> project)
@@ -20,3 +22,4 @@ namespace Bearded.Monads
         }
     }
 }
+#endif

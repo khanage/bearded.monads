@@ -2,14 +2,13 @@
 <package >
   <metadata>
     <id>Bearded.Monads</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <title>Bearded.Monads</title>
     <authors>khanage@gmail.com</authors>
     <description>
       A place to put various monads that are useful in general C# programming.
     </description>
     <releaseNotes>
-      AggregateOrNone extensions.
       Return None on implicit cast for ref types equal to null.
     </releaseNotes>
     <summary>

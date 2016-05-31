@@ -74,11 +74,11 @@
   -->
   <Target Name="AfterBuild" Condition=" '$(ChildBuild)' == 'True' ">
     <!-- Build NET35 -->
-    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v3.5' " Projects="$(MSBuildProjectFile)" ToolsVersion="3.5" Properties="TargetFrameworkVersion=v3.5; ChildBuild=False" RunEachTargetSeparately="true" />
+    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v3.5' " Projects="$(MSBuildProjectFile)" ToolsVersion="14.0" Properties="TargetFrameworkVersion=v3.5; ChildBuild=False" RunEachTargetSeparately="true" />
     <!-- Build NET40 -->
-    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v4.0' " Projects="$(MSBuildProjectFile)" ToolsVersion="4.0" Properties="TargetFrameworkVersion=v4.0; ChildBuild=False" RunEachTargetSeparately="true" />
+    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v4.0' " Projects="$(MSBuildProjectFile)" ToolsVersion="14.0" Properties="TargetFrameworkVersion=v4.0; ChildBuild=False" RunEachTargetSeparately="true" />
     <!-- Build NET45 -->
-    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v4.5' " Projects="$(MSBuildProjectFile)" ToolsVersion="4.0" Properties="TargetFrameworkVersion=v4.5; ChildBuild=False" RunEachTargetSeparately="true" />
+    <MSBuild Condition=" '$(TargetFrameworkVersion)' != 'v4.5' " Projects="$(MSBuildProjectFile)" ToolsVersion="14.0" Properties="TargetFrameworkVersion=v4.5; ChildBuild=False" RunEachTargetSeparately="true" />
   </Target>
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);$(Framework)</DefineConstants>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.Threading.Tasks;
 
 namespace Bearded.Monads
@@ -11,17 +12,21 @@ namespace Bearded.Monads
         public static AsyncApplicative<A, B> Asynquence<A, B>(Task<A> callbackA, Task<B> callbackB) =>
             new AsyncApplicative<A, B>(callbackA, callbackB);
 
-        public static AsyncApplicative<A, B, C> Asynquence<A, B, C>(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC) =>
-            new AsyncApplicative<A,B,C>(callbackA, callbackB, callbackC);
+        public static AsyncApplicative<A, B, C> Asynquence<A, B, C>(Task<A> callbackA, Task<B> callbackB,
+            Task<C> callbackC) =>
+                new AsyncApplicative<A, B, C>(callbackA, callbackB, callbackC);
 
-        public static AsyncApplicative<A, B, C, D> Asynquence<A, B, C, D>(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD) =>
-            new AsyncApplicative<A,B,C,D>(callbackA, callbackB, callbackC, callbackD);
+        public static AsyncApplicative<A, B, C, D> Asynquence<A, B, C, D>(Task<A> callbackA, Task<B> callbackB,
+            Task<C> callbackC, Task<D> callbackD) =>
+                new AsyncApplicative<A, B, C, D>(callbackA, callbackB, callbackC, callbackD);
 
-        public static AsyncApplicative<A, B, C, D, E> Asynquence<A, B, C, D, E>(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE) =>
-            new AsyncApplicative<A,B,C,D,E>(callbackA, callbackB, callbackC, callbackD, callbackE);
+        public static AsyncApplicative<A, B, C, D, E> Asynquence<A, B, C, D, E>(Task<A> callbackA, Task<B> callbackB,
+            Task<C> callbackC, Task<D> callbackD, Task<E> callbackE) =>
+                new AsyncApplicative<A, B, C, D, E>(callbackA, callbackB, callbackC, callbackD, callbackE);
 
-        public static AsyncApplicative<A, B, C, D, E, F> Asynquence<A, B, C, D, E, F>(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE, Task<F> callbackF) =>
-            new AsyncApplicative<A,B,C,D,E,F>(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF);
+        public static AsyncApplicative<A, B, C, D, E, F> Asynquence<A, B, C, D, E, F>(Task<A> callbackA,
+            Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE, Task<F> callbackF) =>
+                new AsyncApplicative<A, B, C, D, E, F>(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF);
     }
 
     public class AsyncApplicative<A>
@@ -120,7 +125,8 @@ namespace Bearded.Monads
         readonly Task<D> callbackD;
         readonly Task<E> callbackE;
 
-        public AsyncApplicative(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE)
+        public AsyncApplicative(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD,
+            Task<E> callbackE)
         {
             this.callbackA = callbackA;
             this.callbackB = callbackB;
@@ -148,7 +154,8 @@ namespace Bearded.Monads
         readonly Task<E> callbackE;
         readonly Task<F> callbackF;
 
-        public AsyncApplicative(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE, Task<F> callbackF)
+        public AsyncApplicative(Task<A> callbackA, Task<B> callbackB, Task<C> callbackC, Task<D> callbackD,
+            Task<E> callbackE, Task<F> callbackF)
         {
             this.callbackA = callbackA;
             this.callbackB = callbackB;
@@ -163,9 +170,12 @@ namespace Bearded.Monads
         //    AsyncApplicative.Asynquence(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF, callbackG);
 
         public Task<G> Select<G>(Func<A, B, C, D, E, F, G> map) =>
-            Task.WhenAll(callbackA.Run(), callbackB.Run(), callbackC.Run(), callbackD.Run(), callbackE.Run(), callbackF.Run())
+            Task.WhenAll(callbackA.Run(), callbackB.Run(), callbackC.Run(), callbackD.Run(), callbackE.Run(),
+                callbackF.Run())
                 .ContinueWith(t =>
-                    map(callbackA.Result, callbackB.Result, callbackC.Result, callbackD.Result, callbackE.Result, callbackF.Result)
+                    map(callbackA.Result, callbackB.Result, callbackC.Result, callbackD.Result, callbackE.Result,
+                        callbackF.Result)
                 );
     }
 }
+#endif

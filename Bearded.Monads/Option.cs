@@ -17,12 +17,12 @@ namespace Bearded.Monads
         public abstract bool Equals(Option<A> other);
         public abstract bool IsSome { [DebuggerStepThrough]get; }
 
-        public static Option<A> None { get { return NoneOption<A>.Instance; } }
+        public static Option<A> None => NoneOption.Instance;
 
         [DebuggerStepThrough]
         public static Option<A> Return(A a)
         {
-            return new Some<A>(a);
+            return new Some(a);
         }
 
         [DebuggerStepThrough]
@@ -55,13 +55,13 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public Option<B> SelectMany<B>(Func<A, Option<B>> mapper)
         {
-            return this.IsSome ? mapper(this.ForceValue()) : NoneOption<B>.Instance;
+            return this.IsSome ? mapper(this.ForceValue()) : Option<B>.None;
         }
 
         [DebuggerStepThrough]
         public Option<Tuple<A, B>> Concat<B>(Option<B> ob)
         {
-            var emptyResult = NoneOption<Tuple<A, B>>.Instance;
+            var emptyResult = Option<Tuple<A, B>>.None;
 
             if (!this.IsSome)
             {
@@ -83,7 +83,7 @@ namespace Bearded.Monads
                 return this;
             }
 
-            return NoneOption<A>.Instance;
+            return NoneOption.Instance;
         }
 
         [DebuggerStepThrough]
@@ -189,11 +189,11 @@ namespace Bearded.Monads
         }
 
         [DebuggerDisplay("Some({force})")]
-        class Some<B> : Option<B>
+        class Some : Option<A>
         {
-            readonly B force;
+            readonly A force;
 
-            public Some(B force)
+            public Some(A force)
             {
                 this.force = force;
             }
@@ -204,42 +204,38 @@ namespace Bearded.Monads
                 get { return true; }
             }
 
-            public override B ForceValue()
+            public override A ForceValue()
             {
                 return this.force;
             }
 
-            public override Option<C> Map<C>(Func<B, C> mapper)
+            public override Option<B> Map<B>(Func<A, B> mapper)
             {
                 return mapper(this.ForceValue());
             }
 
-            public override void Do(Action<B> callback)
+            public override void Do(Action<A> callback)
             {
                 callback(this.force);
             }
 
-            public override void Do(Action<B> valueCallback, Action nullCallback)
+            public override void Do(Action<A> valueCallback, Action nullCallback)
             {
                 valueCallback(this.force);
             }
 
-            public override bool Equals(Option<B> other)
+            public override bool Equals(Option<A> other)
             {
                 return other.IsSome && this.ForceValue().Equals(other.ForceValue());
             }
         }
 
         [DebuggerDisplay("None")]
-        class NoneOption<B> : Option<B>
+        class NoneOption : Option<A>
         {
             NoneOption() { }
 
-            static readonly NoneOption<B> instance = new NoneOption<B>();
-            public static NoneOption<B> Instance
-            {
-                get { return instance; }
-            }
+            public static NoneOption Instance { get; } = new NoneOption();
 
             public override bool IsSome
             {
@@ -247,24 +243,24 @@ namespace Bearded.Monads
                 get { return false; }
             }
 
-            public override B ForceValue()
+            public override A ForceValue()
             {
                 throw new InvalidOperationException("This does not have a value");
             }
 
-            public override Option<C> Map<C>(Func<B, C> mapper)
+            public override Option<B> Map<B>(Func<A, B> mapper)
             {
-                return NoneOption<C>.Instance;
+                return Option<B>.None;
             }
 
-            public override void Do(Action<B> callback) { }
+            public override void Do(Action<A> callback) { }
 
-            public override void Do(Action<B> valueCallback, Action nullCallback)
+            public override void Do(Action<A> valueCallback, Action nullCallback)
             {
                 nullCallback();
             }
 
-            public override bool Equals(Option<B> other)
+            public override bool Equals(Option<A> other)
             {
                 return ReferenceEquals(this, other);
             }

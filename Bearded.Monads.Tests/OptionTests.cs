@@ -59,6 +59,15 @@ namespace Bearded.Monads.Tests
         }
 
         [Test]
+        public void MappedNoneEquality()
+        {
+            var left = Option<int>.None;
+            var right = Option<string>.None.Map(_ => 1);
+
+            Assert.That(left, Is.EqualTo(right));
+        }
+
+        [Test]
         public void MapNoneIsNoop()
         {
             var none = Option<int>.None;

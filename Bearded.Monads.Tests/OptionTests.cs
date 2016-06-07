@@ -579,7 +579,27 @@ namespace Bearded.Monads.Tests
 
             Assert.False(none);
         }
-      
+
+        [Test]
+        [TestCase(1, 2, 1)]
+        [TestCase(1, null, 1)]
+        [TestCase(null, 2, 2)]
+        [TestCase(null, null, null)]
+        public void PipeOperator(int? x, int? y, int? expected)
+        {
+            Assert.That(expected.NoneIfEmpty(), Is.EqualTo(x.NoneIfEmpty() | y.NoneIfEmpty()));
+        }
+
+        [Test]
+        public void PipeOperatorShortCircuit()
+        {
+            var some = new object().AsOption();
+            var none = Option<object>.None;
+            Func<Option<object>> fail = () => { throw new Exception(); };
+
+            Assert.DoesNotThrow(() => { var result = some | fail; });
+            Assert.Throws<Exception>(() => { var result = none | fail; });
+        }
 
         #region Monad laws
         [Test]

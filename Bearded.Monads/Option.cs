@@ -156,12 +156,12 @@ namespace Bearded.Monads
 
         public static Option<A> operator |(Option<A> left, Option<A> right)
         {
-            if (left)
-                return left;
-            if (right)
-                return right;
+            return left ? left : right;
+        }
 
-            return None;
+        public static Option<A> operator |(Option<A> left, Func<Option<A>> right)
+        {
+            return left ? left : right();
         }
 
         public bool Equals(A other)

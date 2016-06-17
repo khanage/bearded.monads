@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bearded.Monads
 {
@@ -281,5 +282,21 @@ namespace Bearded.Monads
         {
             return items.Else(Enumerable.Empty<A>);
         } 
+
+        [DebuggerStepThrough]
+        public static async Task DoAsync<A>(this Option<A> source, Func<A, Task> act)
+        {
+            if (source == null || !source.IsSome) return;
+
+            await act(source.ForceValue());
+        }
+
+        [DebuggerStepThrough]
+        public static async Task<Option<B>> MapAsync<A, B>(this Option<A> source, Func<A, Task<B>> act)
+        {
+            if (source == null || !source.IsSome) return Option<B>.None;
+
+            return await act(source.ForceValue());
+        }
     }
 }

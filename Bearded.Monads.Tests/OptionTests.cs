@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace Bearded.Monads.Tests
 {
@@ -599,6 +600,81 @@ namespace Bearded.Monads.Tests
 
             Assert.DoesNotThrow(() => { var result = some | fail; });
             Assert.Throws<Exception>(() => { var result = none | fail; });
+        }
+
+        [Test]
+        public async Task DoAsyncWithSome()
+        {
+            var some = new object().AsOption();
+            var wasCalled = false;
+
+            await some.DoAsync(async x => {
+                await Task.Delay(0);
+                wasCalled = true;
+            });
+
+            Assert.True(wasCalled);
+        }
+
+        [Test]
+        public async Task DoAsyncWithNone()
+        {
+            var none = Option<object>.None;
+            var wasCalled = false;
+
+            await none.DoAsync(async x => {
+                await Task.Delay(0);
+                wasCalled = true;
+            });
+
+            Assert.False(wasCalled);
+        }
+
+        [Test]
+        public async Task DoAsyncWithNull()
+        {
+            Option<object> none = null;
+            var wasCalled = false;
+
+            await none.DoAsync(async x => {
+                await Task.Delay(0);
+                wasCalled = true;
+            });
+
+            Assert.False(wasCalled);
+        }
+
+        [Test]
+        public async Task MapAsyncWithSome()
+        {
+            var some = 0.AsOption();
+
+            var result = await some.MapAsync(
+                async x => await Task.FromResult(x + 1));
+
+            Assert.AreEqual(1.AsOption(), result);
+        }
+
+        [Test]
+        public async Task MapAsyncWithNone()
+        {
+            var none = Option<int>.None;
+
+            var result = await none.MapAsync(
+                async x => await Task.FromResult(x + 1));
+
+            Assert.AreEqual(Option<int>.None, result);
+        }
+
+        [Test]
+        public async Task MapAsyncWithNull()
+        {
+            Option<object> none = null;
+
+            var result = await none.MapAsync(
+                async x => await Task.FromResult(0));
+
+            Assert.AreEqual(Option<int>.None, result);
         }
 
         #region Monad laws

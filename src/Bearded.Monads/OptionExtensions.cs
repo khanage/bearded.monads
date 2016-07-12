@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NET45
 using System.Threading.Tasks;
+#endif
 
 namespace Bearded.Monads
 {
@@ -281,8 +283,9 @@ namespace Bearded.Monads
         public static IEnumerable<A> ElseEmpty<A>(this Option<IEnumerable<A>> items)
         {
             return items.Else(Enumerable.Empty<A>);
-        } 
+        }
 
+#if NET45
         [DebuggerStepThrough]
         public static async Task DoAsync<A>(this Option<A> source, Func<A, Task> act)
         {
@@ -298,5 +301,6 @@ namespace Bearded.Monads
 
             return await act(source.ForceValue());
         }
+#endif
     }
 }

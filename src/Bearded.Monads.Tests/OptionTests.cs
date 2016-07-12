@@ -602,6 +602,7 @@ namespace Bearded.Monads.Tests
             Assert.Throws<Exception>(() => { var result = none | fail; });
         }
 
+#if NET45
         [Test]
         public async Task DoAsyncWithSome()
         {
@@ -676,8 +677,9 @@ namespace Bearded.Monads.Tests
 
             Assert.AreEqual(Option<int>.None, result);
         }
+#endif
 
-        #region Monad laws
+#region Monad laws
         [Test]
         public void LeftIdentity()
         {
@@ -732,6 +734,6 @@ namespace Bearded.Monads.Tests
 
             Assert.That(first, Is.EqualTo(second));
         }
-        #endregion
+#endregion
     }
 }

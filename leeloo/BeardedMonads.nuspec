@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>khanage@gmail.com</authors>
+    <owners>Khan Thompson</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>Functional Programming</tags>
+    <description>
+      A collection of applicative and monad implementations to enhance code.
+    </description>
+    <projectUrl>http://github.com/khanage/Bearded.Monads</projectUrl>
+    <iconUrl>https://raw.github.com/khanage/Bearded.Monads/master/beard.jpg</iconUrl>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    @dependencies@
+    @references@
+  </metadata>
+</package>

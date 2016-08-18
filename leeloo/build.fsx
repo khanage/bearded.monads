@@ -16,7 +16,7 @@ open Leeloo
 let version =
     let major = environVarOrDefault "LEELOO_MAJORVERSION" "1"
     let minor = environVarOrDefault "LEELOO_MINORVERSION" "1"    
-    let build = environVarOrDefault "LEELOO_BUILDNUMBER"  "0"
+    let build = environVarOrDefault "LEELOO_BUILDNUMBER"  "4"
 
     sprintf "%s.%s.%s" major minor build
 
@@ -25,7 +25,7 @@ let nuspecFileBase = "BeardedMonads.nuspec"
 let projectRoot = ".."
 let paths = new LeelooPaths(new System.IO.DirectoryInfo(projectRoot))
 
-let buildFrameworks = [ V35 ; V4; V45; V451 ]
+let buildFrameworks = [ V35; V4; V45; V451 ]
 
 (* Use this to override which projects are built for frameworks *)
 let shouldBuildForFramework (version: FrameworkVersion) (project: string) =

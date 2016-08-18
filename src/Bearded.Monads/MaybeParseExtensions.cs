@@ -46,7 +46,7 @@ namespace Bearded.Monads
             return Option<Uri>.None;
         }
 
-#if NET4
+#if NET40
         public static Option<A> MaybeEnum<A>(this string value, bool ignoreCase = false)
             where A : struct
         {

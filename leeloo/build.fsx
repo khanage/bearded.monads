@@ -16,7 +16,7 @@ open Leeloo
 let version =
     let major = environVarOrDefault "LEELOO_MAJORVERSION" "1"
     let minor = environVarOrDefault "LEELOO_MINORVERSION" "1"    
-    let build = environVarOrDefault "LEELOO_BUILDNUMBER"  "4"
+    let build = environVarOrDefault "LEELOO_BUILDNUMBER"  "5"
 
     sprintf "%s.%s.%s" major minor build
 

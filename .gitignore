@@ -26,9 +26,7 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-Bearded.Monads.Nuget/Bearded.Monads.*.nupkg
-Bearded.Monads.Nuget/lib/NET*
-Bearded.Monads.Nuget/lib/NET*
 
-!NuGet.exe
-leeloo/
+/leeloo/**
+
+!packages/leeloo/**

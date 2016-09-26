@@ -1,6 +1,8 @@
 Bearded.Monads
 ============
 
+![appveyor build][https://ci.appveyor.com/api/projects/status/54v67eb0sooyuahl?svg=true]
+
 Neckbeard monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
 Currently only provides Option and Either, as they are usefull for error checking.

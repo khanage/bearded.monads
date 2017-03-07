@@ -295,6 +295,12 @@ namespace Bearded.Monads
             return items.Else(Enumerable.Empty<A>);
         }
 
+        [DebuggerStepThrough]
+        public static A ElseNew<A>(this Option<A> items) where A : new()
+        {
+            return items.Else(() => new A());
+        }
+
 #if NET45
         [DebuggerStepThrough]
         public static async Task DoAsync<A>(this Option<A> source, Func<A, Task> act)

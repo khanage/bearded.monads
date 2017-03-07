@@ -34,6 +34,16 @@ namespace Bearded.Monads
             return mapper(a, b);
         }
 
+        public static Option<A> Or<A>(this Option<A> left, Option<A> right)
+        {
+            return left | right;
+        }
+
+        public static Option<A> Or<A>(this Option<A> left, Func<Option<A>> right)
+        {
+            return left | right;
+        }
+
         [DebuggerStepThrough]
         public static Option<A> FirstOrDefault<A>(this IEnumerable<Option<A>> options)
         {
@@ -283,6 +293,12 @@ namespace Bearded.Monads
         public static IEnumerable<A> ElseEmpty<A>(this Option<IEnumerable<A>> items)
         {
             return items.Else(Enumerable.Empty<A>);
+        }
+
+        [DebuggerStepThrough]
+        public static A ElseNew<A>(this Option<A> items) where A : new()
+        {
+            return items.Else(() => new A());
         }
 
 #if NET45

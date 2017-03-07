@@ -34,6 +34,16 @@ namespace Bearded.Monads
             return mapper(a, b);
         }
 
+        public static Option<A> Or<A>(this Option<A> left, Option<A> right)
+        {
+            return left | right;
+        }
+
+        public static Option<A> Or<A>(this Option<A> left, Func<Option<A>> right)
+        {
+            return left | right;
+        }
+
         [DebuggerStepThrough]
         public static Option<A> FirstOrDefault<A>(this IEnumerable<Option<A>> options)
         {

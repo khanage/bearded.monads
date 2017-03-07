@@ -5,9 +5,9 @@ branches:
   only:
   - master
 environment:
-  LEELOO_MAJORVERSION:1
-  LEELOO_MINORVERSION:1
-  LEELOO_BUILDNUMBER:{build}
+  LEELOO_MAJORVERSION: 1
+  LEELOO_MINORVERSION: 1
+  LEELOO_BUILDNUMBER: {build}
 build_script:
   - cmd: .\build.cmd
 deploy:

@@ -1,4 +1,17 @@
 version: 1.1.{build}
-
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+environment:
+  LEELOO_MAJORVERSION:1
+  LEELOO_MINORVERSION:1
+  LEELOO_BUILDNUMBER:{build}
 build_script:
   - cmd: .\build.cmd
+deploy:
+- provider: NuGet
+  api_key:
+    secure: DxKLDePDwEjgtJFqGAHqOTDGCY92mhaivSJmXVTfLTmQP+IWWkX7ibqGAPUkCAGX
+  artifact: /leeloo\/nupkgs\/.*\.nupkg/

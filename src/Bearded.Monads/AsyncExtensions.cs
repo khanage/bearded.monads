@@ -1,5 +1,4 @@
-#if NET45
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Bearded.Monads
@@ -22,4 +21,3 @@ namespace Bearded.Monads
         }
     }
 }
-#endif

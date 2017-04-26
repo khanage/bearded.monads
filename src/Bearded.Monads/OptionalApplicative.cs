@@ -1,5 +1,4 @@
-﻿#if NET45
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -210,4 +209,3 @@ namespace Bearded.Monads
         //    new OptionalApplicative<A, B, C, D, E, F, G, H>(a, b, c, d, e, f, g, h);
     }
 }
-#endif

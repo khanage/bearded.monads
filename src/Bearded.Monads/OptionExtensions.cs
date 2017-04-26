@@ -1,10 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-#if NET45
 using System.Threading.Tasks;
-#endif
 
 namespace Bearded.Monads
 {
@@ -277,7 +275,6 @@ namespace Bearded.Monads
             throw exceptionCallback();
         }
 
-#if NET45
         [DebuggerStepThrough]
         public static Option<A> MaybeGetReference<A>(this WeakReference<A> refToItem) where A : class
         {
@@ -287,7 +284,6 @@ namespace Bearded.Monads
 
             return Option<A>.None;
         }
-#endif
 
         [DebuggerStepThrough]
         public static IEnumerable<A> ElseEmpty<A>(this Option<IEnumerable<A>> items)
@@ -301,7 +297,6 @@ namespace Bearded.Monads
             return items.Else(() => new A());
         }
 
-#if NET45
         [DebuggerStepThrough]
         public static async Task DoAsync<A>(this Option<A> source, Func<A, Task> act)
         {
@@ -317,6 +312,5 @@ namespace Bearded.Monads
 
             return await act(source.ForceValue());
         }
-#endif
     }
 }

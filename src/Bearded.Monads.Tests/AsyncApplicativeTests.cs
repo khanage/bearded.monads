@@ -5,24 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using Xunit;
 using static Bearded.Monads.AsyncApplicative;
 
 namespace Bearded.Monads.Tests
 {
-    class AsyncApplicativeTests
+    public class AsyncApplicativeTests
     {
-        [Test]
+        [Fact]
         public async void BaseAsynquenceCall()
         {
             var result = await Asynquence(Task.FromResult(10), Task.FromResult(20))
                 .Select((x, y) => x + y);
             var expected = 30;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void ChainedCall_2()
         {
             var result = await Asynquence(Task.FromResult(10))
@@ -30,10 +30,10 @@ namespace Bearded.Monads.Tests
                 .Select((x, y) => x + y);
             var expected = 30;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void ChainedCall_3()
         {
             var result = await Asynquence(Task.FromResult(10))
@@ -42,10 +42,10 @@ namespace Bearded.Monads.Tests
                 .Select((x, y, z) => x + y + z);
             var expected = 30;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void ChainedCall_4()
         {
             var result = await Asynquence(Task.FromResult(10))
@@ -55,10 +55,10 @@ namespace Bearded.Monads.Tests
                 .Select((a, b, c, d) => a + b + c + d);
             var expected = 40;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void ChainedCall_5()
         {
             var result = await Asynquence(Task.FromResult(10))
@@ -69,10 +69,10 @@ namespace Bearded.Monads.Tests
                 .Select((a, b, c, d, e) => a + b + c + d + e);
             var expected = 50;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void ChainedCall_6()
         {
             var result = await Asynquence(Task.FromResult(10))
@@ -84,10 +84,10 @@ namespace Bearded.Monads.Tests
                 .Select((a, b, c, d, e, f) => a + b + c + d + e + f);
             var expected = 60;
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.Equal(expected, result);
         }
 
-        [Test]
+        [Fact]
         public async void Calls_Concurrent()
         {
             var millisecondsPerCall = 200;
@@ -100,13 +100,11 @@ namespace Bearded.Monads.Tests
 
             sw.Stop();
 
-            Assert.That(sw.ElapsedMilliseconds, 
-                Is.GreaterThanOrEqualTo(millisecondsPerCall)
-                 .And.LessThanOrEqualTo(millisecondsPerCall * 2)
-            );
+            Assert.True(sw.ElapsedMilliseconds >= millisecondsPerCall 
+                     && sw.ElapsedMilliseconds <= millisecondsPerCall * 2);
         }
 
-        [Test]
+        [Fact]
         public async void Calls_NotStartedTask()
         {
             var millisecondsPerCall = 200;
@@ -120,9 +118,7 @@ namespace Bearded.Monads.Tests
 
             sw.Stop();
 
-            Assert.That(sw.ElapsedMilliseconds, 
-                Is.LessThanOrEqualTo(millisecondsPerCall * 2)
-            );
+            Assert.True(sw.ElapsedMilliseconds <= millisecondsPerCall * 2);
         }
     }
 }

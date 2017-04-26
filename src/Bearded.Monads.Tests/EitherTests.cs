@@ -1,11 +1,12 @@
 ﻿using System;
-using NUnit.Framework;
+using Xunit;
+using Bearded.Monads;
 
 namespace Bearded.Monads.Tests
 {
-    class EitherTests
+    public class EitherTests
     {
-        [Test]
+        [Fact]
         public void CreateSuccessCase()
         {
             var expected = 42;
@@ -15,10 +16,10 @@ namespace Bearded.Monads.Tests
             Assert.True(value.IsSuccess);
             Assert.False(value.IsError);
 
-            Assert.That(value.AsSuccess.Value, Is.EqualTo(expected));
+            Assert.Equal(expected, value.AsSuccess.Value);
         }
 
-        [Test]
+        [Fact]
         public void CreateErrorCase()
         {
             var errorMessage = "fail";
@@ -28,10 +29,10 @@ namespace Bearded.Monads.Tests
             Assert.True(value.IsError);
             Assert.False(value.IsSuccess);
 
-            Assert.That(value.AsError.Value, Is.EqualTo(errorMessage));
+            Assert.Equal(errorMessage, value.AsError.Value);
         }
 
-        [Test]
+        [Fact]
         public void MapIsApplied()
         {
             var givenValue = 42;
@@ -41,10 +42,10 @@ namespace Bearded.Monads.Tests
                 .Map(i => i + 1);
 
             Assert.True(value.IsSuccess);
-            Assert.That(value.AsSuccess.Value, Is.EqualTo(expectedValue));
+            Assert.Equal(expectedValue, value.AsSuccess.Value);
         }
 
-        [Test]
+        [Fact]
         public void MapIsANoopForError()
         {
             var error = "fail";
@@ -53,45 +54,45 @@ namespace Bearded.Monads.Tests
                 .Map(i => i + 1);
 
             Assert.True(value.IsError);
-            Assert.That(value.AsError.Value, Is.EqualTo(error));
+            Assert.Equal(error, value.AsError.Value);
         }
 
-        [Test]
+        [Fact]
         public void ImplicitForSuccess()
         {
             var expectedValue = 1;
             Func<EitherSuccessOrError<int, string>> f;
             f = () => expectedValue;
 
-            Assert.That(f().AsSuccess.Value, Is.EqualTo(expectedValue));
+            Assert.Equal(expectedValue, f().AsSuccess.Value);
         }
 
-        [Test]
+        [Fact]
         public void ImplicitForError()
         {
             var expectedValue = "fail";
             Func<EitherSuccessOrError<int, string>> f;
             f = () => expectedValue;
 
-            Assert.That(f().AsError.Value, Is.EqualTo(expectedValue));
+            Assert.Equal(expectedValue, f().AsError.Value);
         }
 
-        [Test]
+        [Fact]
         public void ImplicitForBoth()
         {
             var expectedSucess = 42;
             var expectedError = "fail";
             Func<Tuple<EitherSuccessOrError<int, string>, EitherSuccessOrError<int, string>>> f;
-            f = () => new Tuple<EitherSuccessOrError<int, string>, EitherSuccessOrError<int, string>>(expectedSucess,expectedError);
+            f = () => new Tuple<EitherSuccessOrError<int, string>, EitherSuccessOrError<int, string>>(expectedSucess, expectedError);
 
             var success = f().Item1.AsSuccess;
             var error = f().Item2.AsError;
 
-            Assert.That(success.Value, Is.EqualTo(expectedSucess));
-            Assert.That(error.Value, Is.EqualTo(expectedError));
+            Assert.Equal(expectedSucess, success.Value);
+            Assert.Equal(expectedError, error.Value);
         }
 
-        [Test]
+        [Fact]
         public void AsOptionForSuccess_CarriesValue()
         {
             var expectedSucess = 42;
@@ -103,10 +104,10 @@ namespace Bearded.Monads.Tests
 
             Assert.False(wasCalled);
             Assert.True(option.IsSome);
-            Assert.That(option.ForceValue(), Is.EqualTo(expectedSucess));
+            Assert.Equal(expectedSucess, option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void AsOptionForError_IsNoneAndCallbackFired()
         {
             var expectedError = "fail";
@@ -120,7 +121,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_BothSuccess()
         {
             var firstValue = 42;
@@ -130,16 +131,16 @@ namespace Bearded.Monads.Tests
 
             EitherSuccessOrError<int, string> firstEither = firstValue;
             EitherSuccessOrError<int, string> secondEither = secondValue;
-            
+
             var stuff =
                 from f in firstEither
                 from s in secondEither
                 select f + s;
 
-            Assert.That(stuff.AsSuccess.Value, Is.EqualTo(expectedValue));
+            Assert.Equal(expectedValue, stuff.AsSuccess.Value);
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_FirstError()
         {
             var firstError = "fail";
@@ -153,45 +154,45 @@ namespace Bearded.Monads.Tests
                 from s in secondEither
                 select f + s;
 
-            Assert.That(stuff.AsError.Value, Is.EqualTo(firstError));
+            Assert.Equal(firstError, stuff.AsError.Value);
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_SecondError()
         {
             var firstValue = 42;
             var secondError = "fail";
-            
+
             EitherSuccessOrError<int, string> firstEither = firstValue;
             EitherSuccessOrError<int, string> secondEither = secondError;
-            
+
             var stuff =
                 from f in firstEither
                 from s in secondEither
                 select f + s;
 
-            Assert.That(stuff.AsError.Value, Is.EqualTo(secondError));
+            Assert.Equal(secondError, stuff.AsError.Value);
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_BothError_FirstError()
         {
             var firstValue = "epic";
             var secondValue = "fail";
-            
+
             EitherSuccessOrError<int, string> firstEither = firstValue;
             EitherSuccessOrError<int, string> secondEither = secondValue;
-            
+
             var stuff =
                 from f in firstEither
                 from s in secondEither
                 select f + s;
 
-            Assert.That(stuff.AsError.Value, Is.EqualTo(firstValue));
+            Assert.Equal(firstValue, stuff.AsError.Value);
         }
 
         #region Monad laws
-        [Test]
+        [Fact]
         public void LeftIdentity()
         {
             // forall a b, f :: (a -> Either a b). return a >>= f === f a
@@ -200,7 +201,7 @@ namespace Bearded.Monads.Tests
             // without 
 
             var someName = "Wadler";
-            EitherSuccessOrError<string,int> either = someName;
+            EitherSuccessOrError<string, int> either = someName;
 
             Func<string, EitherSuccessOrError<string, int>> f;
             f = s => s.ToUpper();
@@ -208,10 +209,10 @@ namespace Bearded.Monads.Tests
             var viaOption = either.SelectMany(f);
             var straight = f(someName);
 
-            Assert.That(viaOption, Is.EqualTo(straight));
+            Assert.Equal(straight, viaOption);
         }
 
-        [Test]
+        [Fact]
         public void RightIdentity()
         {
             // forall m. m >>= return === m
@@ -223,10 +224,10 @@ namespace Bearded.Monads.Tests
 
             var viaOption = option.SelectMany(EitherSuccessOrError<string, int>.Create);
 
-            Assert.That(viaOption, Is.EqualTo(option));
+            Assert.Equal(option, viaOption);
         }
 
-        [Test]
+        [Fact]
         public void Associativity()
         {
             // Order of application of functions must associate
@@ -243,7 +244,7 @@ namespace Bearded.Monads.Tests
             var first = option.SelectMany(f).SelectMany(g);
             var second = option.SelectMany(x => f(x).SelectMany(g));
 
-            Assert.That(first, Is.EqualTo(second));
+            Assert.Equal(second, first);
         }
         #endregion
     }

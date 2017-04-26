@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using Bearded.Monads;
+using Xunit;
 
 namespace Bearded.Monads.Tests
 {
-    class OptionTests
+    public class OptionTests
     {
-        [Test]
+        [Fact]
         public void Return()
         {
             var someInteger = 42;
-
             var option = Option.Return(someInteger);
 
-            Assert.That(option.IsSome, Is.True);
-            Assert.That(option.ForceValue(), Is.EqualTo(42));
+            Assert.True(option.IsSome);
+            Assert.Equal(42, option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void None()
         {
             var option = Option<int>.None;
 
-            Assert.That(option.IsSome, Is.False);
+            Assert.False(option.IsSome);
             Assert.Throws<InvalidOperationException>(delegate { var _ = option.ForceValue(); });
         }
 
-        [Test]
+        [Fact]
         public void SomeEquality()
         {
             var elem = 42;
@@ -39,14 +39,14 @@ namespace Bearded.Monads.Tests
             var sameTypedNone = Option<int>.None;
             var differentTypedNone = Option<string>.None;
 
-            Assert.That(firstOption, Is.EqualTo(secondOption));
-            Assert.That(firstOption, Is.Not.EqualTo(differentValuedOption));
-            Assert.That(firstOption, Is.Not.EqualTo(differentTypedOption));
-            Assert.That(firstOption, Is.Not.EqualTo(sameTypedNone));
-            Assert.That(firstOption, Is.Not.EqualTo(differentTypedNone));
+            Assert.Equal(secondOption, firstOption);
+            Assert.NotEqual(differentValuedOption, firstOption);
+            Assert.False(differentTypedOption.Equals(firstOption));
+            Assert.False(sameTypedNone.Equals(firstOption));
+            Assert.False(differentTypedNone.Equals(firstOption));
         }
 
-        [Test]
+        [Fact]
         public void NoneEquality()
         {
             var none = Option<int>.None;
@@ -54,31 +54,31 @@ namespace Bearded.Monads.Tests
             var sameTypeSome = Option<int>.Return(42);
             var differentTypeSome = Option.Return("Hello, world");
 
-            Assert.That(none, Is.EqualTo(sameTypedNone));
-            Assert.That(none, Is.Not.EqualTo(sameTypeSome));
-            Assert.That(none, Is.Not.EqualTo(differentTypeSome));
+            Assert.Equal(sameTypedNone, none);
+            Assert.NotEqual(sameTypeSome, none);
+            Assert.False(differentTypeSome == none);
         }
 
-        [Test]
+        [Fact]
         public void MappedNoneEquality()
         {
             var left = Option<int>.None;
             var right = Option<string>.None.Map(_ => 1);
 
-            Assert.That(left, Is.EqualTo(right));
+            Assert.Equal(right, left);
         }
 
-        [Test]
+        [Fact]
         public void MapNoneIsNoop()
         {
             var none = Option<int>.None;
 
             var result = none.Map(i => i + 1);
 
-            Assert.That(result, Is.EqualTo(none));
+            Assert.Equal(none, result);
         }
 
-        [Test]
+        [Fact]
         public void MapSomeAffectsValue()
         {
             var option = Option.Return(41);
@@ -86,10 +86,10 @@ namespace Bearded.Monads.Tests
             var resultOption = option.Map(i => i + 1);
 
             Assert.True(resultOption.IsSome);
-            Assert.That(resultOption.ForceValue(), Is.EqualTo(42));
+            Assert.Equal(42, resultOption.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void DoIsCalledForSome()
         {
             var option = Option.Return(42);
@@ -98,10 +98,10 @@ namespace Bearded.Monads.Tests
 
             option.Do(j => i = j);
 
-            Assert.That(i, Is.EqualTo(42));
+            Assert.Equal(42, i);
         }
 
-        [Test]
+        [Fact]
         public void DoWithOverloadIsCalledForSome()
         {
             var option = Option.Return(42);
@@ -110,10 +110,10 @@ namespace Bearded.Monads.Tests
 
             option.Do(j => i = j, () => { });
 
-            Assert.That(i, Is.EqualTo(42));
+            Assert.Equal(42, i);
         }
 
-        [Test]
+        [Fact]
         public void DoWithOverloadIsCalledForNone()
         {
             var option = Option<int>.None;
@@ -125,43 +125,43 @@ namespace Bearded.Monads.Tests
             Assert.True(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public void ElseWithDefault()
         {
             var option = Option<int>.None;
             var def = option.ElseDefault();
-            
-            Assert.That(def, Is.EqualTo(default(int)));
+
+            Assert.Equal(default(int), def);
         }
 
-        [Test]
+        [Fact]
         public void ElseWithSomeReturnsSome()
         {
             var option = Option.Return(42);
             var def = option.Else(() => 666);
 
-            Assert.That(def, Is.EqualTo(42));
+            Assert.Equal(42, def);
         }
 
-        [Test]
+        [Fact]
         public void ElseWithNoneReturnsElse()
         {
             var option = Option<int>.None;
             var def = option.Else(() => 666);
 
-            Assert.That(def, Is.EqualTo(666));
+            Assert.Equal(666, def);
         }
 
-        [Test]
+        [Fact]
         public void SelectManyFlattensOption()
         {
             var optionOption = Option.Return(Option.Return(42));
             var option = optionOption.SelectMany(x => x);
 
-            Assert.That(option.ForceValue(), Is.EqualTo(42));
+            Assert.Equal(42, option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void ConcatLeftOnly()
         {
             var left = Option.Return(42);
@@ -172,7 +172,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void ConcatRightOnly()
         {
             var left = Option<int>.None;
@@ -183,7 +183,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void ConcatBoth()
         {
             var left = Option.Return(42);
@@ -191,31 +191,31 @@ namespace Bearded.Monads.Tests
 
             var option = left.Concat(right);
 
-            Assert.That(option.ForceValue(), Is.EqualTo(new Tuple<int,int>(42, 42)));
+            Assert.Equal(new Tuple<int, int>(42, 42), option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void WhereWithMatchingPredicateReturnsSome()
         {
             var option = Option.Return(42);
 
             var result = option.Where(i => true);
 
-            Assert.That(result, Is.EqualTo(option));
+            Assert.Equal(option, result);
         }
 
-        [Test]
+        [Fact]
         public void WhereWithFailingPredicateReturnsNone()
         {
             var option = Option.Return(42);
 
             var result = option.Where(i => false);
 
-            Assert.That(result, Is.Not.EqualTo(option));
-            Assert.That(result, Is.EqualTo(Option<int>.None));
+            Assert.NotEqual(option, result);
+            Assert.Equal(Option<int>.None, result);
         }
 
-        [Test]
+        [Fact]
         public void EmptyCallbackForSome()
         {
             var option = Option.Return(42);
@@ -227,7 +227,7 @@ namespace Bearded.Monads.Tests
             Assert.False(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public void EmptyCallbackForNone()
         {
             var option = Option<int>.None;
@@ -239,7 +239,7 @@ namespace Bearded.Monads.Tests
             Assert.True(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public void CallbackForWhenSomeOnSome()
         {
             var option = Option.Return(42);
@@ -248,10 +248,10 @@ namespace Bearded.Monads.Tests
 
             option.WhenSome(j => i = j);
 
-            Assert.That(i, Is.EqualTo(option.ForceValue()));
+            Assert.Equal(option.ForceValue(), i);
         }
 
-        [Test]
+        [Fact]
         public void CallbackForWhenSomeOnNone()
         {
             var option = Option<int>.None;
@@ -260,10 +260,10 @@ namespace Bearded.Monads.Tests
 
             option.WhenSome(j => i = j);
 
-            Assert.That(i, Is.EqualTo(666));
+            Assert.Equal(666, i);
         }
 
-        [Test]
+        [Fact]
         public void CallbackForWhenNoneOnSome()
         {
             var option = Option.Return(42);
@@ -275,7 +275,7 @@ namespace Bearded.Monads.Tests
             Assert.False(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public void CallbackForWhenNoneOnNone()
         {
             var option = Option<int>.None;
@@ -287,40 +287,40 @@ namespace Bearded.Monads.Tests
             Assert.True(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public void TrueOperatorOnSome()
         {
             if (Option.Return(42)) { }
             else
             {
-                Assert.Fail();
+                Assert.False(true);
             }
         }
 
-        [Test]
+        [Fact]
         public void TrueOperatorOnNone()
         {
             if (Option<int>.None)
             {
-                Assert.Fail();
+                Assert.False(true);
             }
         }
 
-        [Test]
+        [Fact]
         public void SelectManyBothSome()
         {
-            var result = 
+            var result =
                 from a in Option.Return(21)
                 from b in Option.Return(21)
                 select a + b;
 
-            Assert.That(result.ForceValue(), Is.EqualTo(42));
+            Assert.Equal(42, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void SelectManyFirstNone()
         {
-            var result = 
+            var result =
                 from a in Option<int>.None
                 from b in Option.Return(21)
                 select a + b;
@@ -328,7 +328,7 @@ namespace Bearded.Monads.Tests
             Assert.False(result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void SelectManySecondNone()
         {
             var result =
@@ -339,7 +339,7 @@ namespace Bearded.Monads.Tests
             Assert.False(result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefaultEmptyList()
         {
             var items = new List<Option<int>>();
@@ -348,27 +348,27 @@ namespace Bearded.Monads.Tests
             Assert.False(result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefaultFirstSome()
         {
-            var items = new List<Option<int>>{ Option.Return(42), Option.Return(666)};
+            var items = new List<Option<int>> { Option.Return(42), Option.Return(666) };
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
-            Assert.That(result.ForceValue(), Is.EqualTo(42));
+            Assert.Equal(42, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefaultSecondSome()
         {
             var items = new List<Option<int>> { Option<int>.None, Option.Return(666) };
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
-            Assert.That(result.ForceValue(), Is.EqualTo(666));
+            Assert.Equal(666, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefaultAllNone()
         {
             var items = new List<Option<int>> { Option<int>.None, Option<int>.None };
@@ -377,16 +377,16 @@ namespace Bearded.Monads.Tests
             Assert.False(result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void ThenWithTrueValue()
         {
             var option = true.Then(() => 42);
 
             Assert.True(option.IsSome);
-            Assert.That(option.ForceValue(), Is.EqualTo(42));
+            Assert.Equal(42, option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void ThenWithFalseValue()
         {
             var option = false.Then(() => 42);
@@ -394,7 +394,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void NoneIfNullNonNull()
         {
             var str = "hello, world";
@@ -402,10 +402,10 @@ namespace Bearded.Monads.Tests
             var option = str.NoneIfNull();
 
             Assert.True(option.IsSome);
-            Assert.That(option.ForceValue(), Is.EqualTo(str));
+            Assert.Equal(str, option.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void NoneIfNullNull()
         {
             string str = null;
@@ -415,7 +415,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void NoneIfFalseOnFalse()
         {
             var option = false.NoneIfFalse();
@@ -423,7 +423,7 @@ namespace Bearded.Monads.Tests
             Assert.False(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void NoneIfFalseOnTrue()
         {
             var option = true.NoneIfFalse();
@@ -431,48 +431,48 @@ namespace Bearded.Monads.Tests
             Assert.True(option.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void TryGetValueForPresentKey()
         {
             var key = "hello";
             var expectedValue = 42;
 
-            var dict = new Dictionary<string, object> {{key, expectedValue}};
+            var dict = new Dictionary<string, object> { { key, expectedValue } };
 
             var result = dict.MaybeGetValue(key);
-            
-            Assert.That(result.IsSome);
-            Assert.That(result.ForceValue(), Is.EqualTo(expectedValue));
+
+            Assert.True(result.IsSome);
+            Assert.Equal(expectedValue, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void TryGetValueForMissingKey()
         {
             var key = "hello";
             var expectedValue = 42;
 
-            var dict = new Dictionary<string, object> {{"irrelevent", expectedValue}};
+            var dict = new Dictionary<string, object> { { "irrelevent", expectedValue } };
 
             var result = dict.MaybeGetValue(key);
-            
-            Assert.That(!result.IsSome);
+
+            Assert.True(!result.IsSome);
         }
-        [Test]
+        [Fact]
         public void TryGetValuesForPresentKey()
         {
             var key = "hello";
-            var expectedValues = new[] {11, 42};
+            var expectedValues = new[] { 11, 42 };
 
-            var lookup = new[] {Tuple.Create("hello", 11), Tuple.Create("hello", 42)}
+            var lookup = new[] { Tuple.Create("hello", 11), Tuple.Create("hello", 42) }
                 .ToLookup(t => t.Item1, t => t.Item2);
 
             var result = lookup.MaybeGetValues(key);
 
-            Assert.That(result.IsSome);
-            Assert.That(result.ForceValue(), Is.EqualTo(expectedValues));
+            Assert.True(result.IsSome);
+            Assert.Equal(expectedValues, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void TryGetValuesForMissingKey()
         {
             var key = "hello";
@@ -482,134 +482,137 @@ namespace Bearded.Monads.Tests
 
             var result = lookup.MaybeGetValues(key);
 
-            Assert.That(result.IsSome, Is.False);
+            Assert.False(result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithExistingMembers()
         {
-            var list = new[] {1, 2, 3};
+            var list = new[] { 1, 2, 3 };
 
             var result = list.AggregateOrNone((total, current) => total + current);
 
-            Assert.That(result.ForceValue(), Is.EqualTo(6));
+            Assert.Equal(6, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithMissingMembers()
         {
             var list = Enumerable.Empty<int>();
 
             var result = list.AggregateOrNone((total, current) => total + current);
 
-            Assert.That(!result.IsSome);
+            Assert.True(!result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithOptions()
         {
-            var list = new[] {1.AsOption(), 2.AsOption(), 3.AsOption()};
+            var list = new[] { 1.AsOption(), 2.AsOption(), 3.AsOption() };
 
             var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
 
-            Assert.That(result.ForceValue(), Is.EqualTo(6));
+            Assert.Equal(6, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithOptionsAndNone()
         {
             var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
 
             var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
 
-            Assert.That(!result.IsSome); ;
+            Assert.True(!result.IsSome);
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithExistingMembersAndSeed()
         {
             var list = new[] { 1, 2, 3 };
 
             var result = list.AggregateOrNone(10, (total, current) => total + current);
 
-            Assert.That(result.ForceValue(), Is.EqualTo(16));
+            Assert.Equal(16, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithMissingMembersAndSeed()
         {
             var list = Enumerable.Empty<int>();
 
             var result = list.AggregateOrNone(10, (total, current) => total + current);
 
-            Assert.That(!result.IsSome);
+            Assert.True(!result.IsSome);
         }
-        [Test]
+        [Fact]
         public void AggregateWithOptionsAndSeed()
         {
             var list = new[] { 1.AsOption(), 2.AsOption(), 3.AsOption() };
 
             var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
 
-            Assert.That(result.ForceValue(), Is.EqualTo(16));
+            Assert.Equal(16, result.ForceValue());
         }
 
-        [Test]
+        [Fact]
         public void AggregateWithOptionsAndNoneAndSeed()
         {
             var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
 
             var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
 
-            Assert.That(!result.IsSome);
+            Assert.True(!result.IsSome);
         }
-        [Test]
+        [Fact]
         public void ImplicitCastBool()
         {
-            bool b  = "IsSome".AsOption();
+            bool b = "IsSome".AsOption();
             Assert.True(b);
             b = Option<string>.None;
             Assert.False(b);
         }
 
-        [Test]
+        [Fact]
         public void ImplicitCastNull()
         {
             string n = null;
             Option<string> none = n;
 
-            Assert.False(none);
+            Assert.True(none);
+            Assert.Equal(null, none.ForceValue());
         }
 
-        [Test]
-        [TestCase(1, 2, 1)]
-        [TestCase(1, null, 1)]
-        [TestCase(null, 2, 2)]
-        [TestCase(null, null, null)]
+        [Theory]
+        [InlineData(1, 2, 1)]
+        [InlineData(1, null, 1)]
+        [InlineData(null, 2, 2)]
+        [InlineData(null, null, null)]
         public void PipeOperator(int? x, int? y, int? expected)
         {
-            Assert.That(expected.NoneIfEmpty(), Is.EqualTo(x.NoneIfEmpty() | y.NoneIfEmpty()));
+            Assert.Equal(x.NoneIfEmpty() | y.NoneIfEmpty(), expected.NoneIfEmpty());
         }
 
-        [Test]
+        [Fact]
         public void PipeOperatorShortCircuit()
         {
             var some = new object().AsOption();
             var none = Option<object>.None;
             Func<Option<object>> fail = () => { throw new Exception(); };
 
-            Assert.DoesNotThrow(() => { var result = some | fail; });
-            Assert.Throws<Exception>(() => { var result = none | fail; });
+            // Does not throw doesn't have
+            // an explicit operator
+            var result = some | fail;
+            Assert.Throws<Exception>(() => { var bad = none | fail; });
         }
 
-#if NET45
-        [Test]
+        [Fact]
         public async Task DoAsyncWithSome()
         {
             var some = new object().AsOption();
             var wasCalled = false;
 
-            await some.DoAsync(async x => {
+            await some.DoAsync(async x =>
+            {
                 await Task.Delay(0);
                 wasCalled = true;
             });
@@ -617,13 +620,14 @@ namespace Bearded.Monads.Tests
             Assert.True(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public async Task DoAsyncWithNone()
         {
             var none = Option<object>.None;
             var wasCalled = false;
 
-            await none.DoAsync(async x => {
+            await none.DoAsync(async x =>
+            {
                 await Task.Delay(0);
                 wasCalled = true;
             });
@@ -631,13 +635,14 @@ namespace Bearded.Monads.Tests
             Assert.False(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public async Task DoAsyncWithNull()
         {
             Option<object> none = null;
             var wasCalled = false;
 
-            await none.DoAsync(async x => {
+            await none.DoAsync(async x =>
+            {
                 await Task.Delay(0);
                 wasCalled = true;
             });
@@ -645,7 +650,7 @@ namespace Bearded.Monads.Tests
             Assert.False(wasCalled);
         }
 
-        [Test]
+        [Fact]
         public async Task MapAsyncWithSome()
         {
             var some = 0.AsOption();
@@ -653,10 +658,10 @@ namespace Bearded.Monads.Tests
             var result = await some.MapAsync(
                 async x => await Task.FromResult(x + 1));
 
-            Assert.AreEqual(1.AsOption(), result);
+            Assert.Equal(1.AsOption(), result);
         }
 
-        [Test]
+        [Fact]
         public async Task MapAsyncWithNone()
         {
             var none = Option<int>.None;
@@ -664,10 +669,10 @@ namespace Bearded.Monads.Tests
             var result = await none.MapAsync(
                 async x => await Task.FromResult(x + 1));
 
-            Assert.AreEqual(Option<int>.None, result);
+            Assert.Equal(Option<int>.None, result);
         }
 
-        [Test]
+        [Fact]
         public async Task MapAsyncWithNull()
         {
             Option<object> none = null;
@@ -675,12 +680,11 @@ namespace Bearded.Monads.Tests
             var result = await none.MapAsync(
                 async x => await Task.FromResult(0));
 
-            Assert.AreEqual(Option<int>.None, result);
+            Assert.Equal(Option<int>.None, result);
         }
-#endif
 
-#region Monad laws
-        [Test]
+        #region Monad laws
+        [Fact]
         public void LeftIdentity()
         {
             // forall a, f :: (a -> Option a). return a >>= f === f a
@@ -697,10 +701,10 @@ namespace Bearded.Monads.Tests
             var viaOption = option.SelectMany(f);
             var straight = f(someName);
 
-            Assert.That(viaOption, Is.EqualTo(straight));
+            Assert.Equal(straight, viaOption);
         }
 
-        [Test]
+        [Fact]
         public void RightIdentity()
         {
             // forall m. m >>= return === m
@@ -712,10 +716,10 @@ namespace Bearded.Monads.Tests
 
             var viaOption = option.SelectMany(Option.Return);
 
-            Assert.That(viaOption, Is.EqualTo(option));
+            Assert.Equal(option, viaOption);
         }
 
-        [Test]
+        [Fact]
         public void Associativity()
         {
             // Order of application of functions must associate
@@ -723,8 +727,8 @@ namespace Bearded.Monads.Tests
             var someName = "Wadler";
             var option = Option.Return(someName);
 
-            Func<string,Option<string>> f;
-            Func<string,Option<string>> g;
+            Func<string, Option<string>> f;
+            Func<string, Option<string>> g;
 
             f = s => s.ToUpper();
             g = s => s.ToLower();
@@ -732,8 +736,8 @@ namespace Bearded.Monads.Tests
             var first = option.SelectMany(f).SelectMany(g);
             var second = option.SelectMany(x => f(x).SelectMany(g));
 
-            Assert.That(first, Is.EqualTo(second));
+            Assert.Equal(second, first);
         }
-#endregion
+        #endregion
     }
 }

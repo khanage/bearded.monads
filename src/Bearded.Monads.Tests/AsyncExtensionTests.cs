@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using Xunit;
 
 namespace Bearded.Monads.Tests
 {
     public class AsyncExtensionTests
     {
-        [Test]
+        [Fact]
         public async void SelectMany_Happy()
         {
             var expected = 20;
@@ -19,10 +19,10 @@ namespace Bearded.Monads.Tests
                 select x + y
             );
 
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(expected, actual);
         }
 
-        [Test]
+        [Fact]
         public async void SelectMany_NotStarted()
         {
             var cancellation = new CancellationTokenSource();
@@ -41,16 +41,16 @@ namespace Bearded.Monads.Tests
             );
 
             sw.Stop();
-            
-            Assert.That(actual, Is.EqualTo(expected));
-            Assert.That(sw.ElapsedMilliseconds, Is.LessThan(failureWindow));
-        }
-        
 
-        [Test]
+            Assert.Equal(expected, actual);
+            Assert.True(sw.ElapsedMilliseconds < failureWindow);
+        }
+
+
+        [Fact]
         public async void SelectMany_Exceptions()
         {
-            var runner = 
+            var runner =
                 from x in Task.Factory.StartNew<int>(() => { Thread.Sleep(100); throw new Exception("X"); })
                 from y in Task.Factory.StartNew<int>(() => { throw new Exception("Y"); })
                 select x + y;
@@ -58,11 +58,11 @@ namespace Bearded.Monads.Tests
             try
             {
                 await runner;
-                Assert.Fail("Expecting exception");
+                throw new Exception("Expecting exception");
             }
             catch (Exception e)
             {
-                Assert.That(e.Message, Is.EqualTo("X"));
+                Assert.Equal("X", e.Message);
             }
         }
     }

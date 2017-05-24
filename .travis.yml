@@ -1,0 +1,13 @@
+language: csharp
+mono: none
+dotnet: 1.0.1
+dist: trusty
+env:
+ - VERSION=$MAJOR.$MINOR.$BUILD
+solution: Bearded.Monads.sln
+install:
+ - dotnet restore Bearded.Monads.sln
+script:
+ - dotnet build Bearded.Monads.sln
+ - dotnet test src/Bearded.Monads.Test/Bearded.Monads.Tests.csproj
+ - dotnet pack /p:PackageVersion=$VERSION -o ./ src/Bearded.Monads/Bearded.Monads.csproj

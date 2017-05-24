@@ -1,13 +1,11 @@
 Bearded.Monads
 ============
 
-![appveyor build](https://ci.appveyor.com/api/projects/status/54v67eb0sooyuahl?svg=true "Thing")
-
 Neckbeard monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
-Currently only provides Option and Either, as they are usefull for error checking.
+Currently provides Option and Either, as they are usefull for error checking, as well as task.
 
-Note: `Select` (aka `fmap`) has been renamed to `Map` to avoid confusion for C# developers. If you don't think this is a good idea, please raise an issue.
+Also provides applicative instances for Task and Maybe.
 
 ### Installation
 
@@ -146,3 +144,26 @@ public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitu
             select third;
 }
 ```
+
+## Task Applicative (aka Asynquence)
+
+This is probable the most interesting use of `Task`. This allows one to chain together a sequence of tasks and provide a callback at the end to produce a final result.
+
+It's recommended to use the below to bring the class into scope directly.
+ 
+```
+using static Bearded.Monads.AsyncApplicative;
+```
+
+Then usage is as follows:
+
+```
+            var result = await Asynquence(Task.FromResult(10))
+                .And(Task.FromResult(10))
+                .And(Task.FromResult(10))
+                .And(Task.FromResult(10))
+                .Select((a, b, c, d) => a + b + c + d);
+            var expected = 40;
+
+            Assert.Equal(expected, result);
+ ```

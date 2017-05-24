@@ -19,5 +19,10 @@ namespace Bearded.Monads
             if (task.Status == TaskStatus.Created) task.Start();
             return task;
         }
+
+        public static Task<B> Select<A, B>(this Task<A> task, Func<A, B> callback)
+        {
+            return task.ContinueWith(t => callback(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
     }
 }

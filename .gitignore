@@ -13,6 +13,7 @@ Thumbs.db
 *.ncb
 *.suo
 *.tlb
+.idea/
 *.tlh
 *.bak
 *.cache
@@ -26,7 +27,4 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-
-/leeloo/**
-
-!packages/leeloo/**
+*.nupkg

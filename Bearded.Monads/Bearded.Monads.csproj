@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <RootNamespace>Bearded.Monads</RootNamespace>
+    <AssemblyName>Bearded.Monads</AssemblyName>
+    <PackageIconUrl>https://raw.githubusercontent.com/khanage/Bearded.Monads/master/beard.jpg</PackageIconUrl>
+    <RepositoryUrl>https://github.com/khanage/Bearded.Monads</RepositoryUrl>
+    <PackageTags>functional monads applicatives</PackageTags>
+    <Description>https://github.com/khanage/Bearded.Monads</Description>
+    <Version>1.2.1</Version>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <FileVersion>1.2.1.0</FileVersion>
+  </PropertyGroup>
+
+</Project>

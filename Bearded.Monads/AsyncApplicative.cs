@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace Bearded.Monads
 {
+    [Obsolete("Use the Bearded.Monads.Syntax import")]
     public static class AsyncApplicative
     {
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>

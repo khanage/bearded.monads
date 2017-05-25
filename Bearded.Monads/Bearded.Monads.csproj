@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <RootNamespace>Bearded.Monads</RootNamespace>
@@ -12,5 +11,4 @@
     <AssemblyVersion>1.2.1.0</AssemblyVersion>
     <FileVersion>1.2.1.0</FileVersion>
   </PropertyGroup>
-
 </Project>

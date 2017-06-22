@@ -689,8 +689,8 @@ namespace Bearded.Monads.Tests
         {
             // forall a, f :: (a -> Option a). return a >>= f === f a
             // if we call selectmany with a function on a single value
-            // the result should be the same as call the function directly 
-            // without 
+            // the result should be the same as call the function directly
+            // without
 
             var someName = "Wadler";
             var option = Option.Return(someName);

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace Bearded.Monads
@@ -10,6 +11,8 @@ namespace Bearded.Monads
     {
         public static A id<A>(A a) => a;
         public static void noop<A>(A a) {}
+        public static Func<A, C> comp<A, B, C>(Func<A, B> f1, Func<B, C> f2)
+            => a => f2(f1(a));
 
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>
             new AsyncApplicative<A>(callback);

@@ -10,9 +10,22 @@ namespace Bearded.Monads
     public static class Syntax
     {
         public static A id<A>(A a) => a;
-        public static void noop<A>(A a) {}
+
+        public static void noop<A>(A a)
+        {
+        }
+
         public static Func<A, C> comp<A, B, C>(Func<A, B> f1, Func<B, C> f2)
             => a => f2(f1(a));
+
+        public static AlwaysSyntax<A> always<A>(A val) => new AlwaysSyntax<A>(val);
+        public class AlwaysSyntax<A>
+        {
+            private readonly A val;
+            public AlwaysSyntax(A val) => this.val = val;
+
+            public A func<B>(B _) => val;
+        }
 
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>
             new AsyncApplicative<A>(callback);
@@ -22,18 +35,18 @@ namespace Bearded.Monads
 
         public static AsyncApplicative<A, B, C> Asynquence<A, B, C>(Task<A> callbackA, Task<B> callbackB,
             Task<C> callbackC) =>
-                new AsyncApplicative<A, B, C>(callbackA, callbackB, callbackC);
+            new AsyncApplicative<A, B, C>(callbackA, callbackB, callbackC);
 
         public static AsyncApplicative<A, B, C, D> Asynquence<A, B, C, D>(Task<A> callbackA, Task<B> callbackB,
             Task<C> callbackC, Task<D> callbackD) =>
-                new AsyncApplicative<A, B, C, D>(callbackA, callbackB, callbackC, callbackD);
+            new AsyncApplicative<A, B, C, D>(callbackA, callbackB, callbackC, callbackD);
 
         public static AsyncApplicative<A, B, C, D, E> Asynquence<A, B, C, D, E>(Task<A> callbackA, Task<B> callbackB,
             Task<C> callbackC, Task<D> callbackD, Task<E> callbackE) =>
-                new AsyncApplicative<A, B, C, D, E>(callbackA, callbackB, callbackC, callbackD, callbackE);
+            new AsyncApplicative<A, B, C, D, E>(callbackA, callbackB, callbackC, callbackD, callbackE);
 
         public static AsyncApplicative<A, B, C, D, E, F> Asynquence<A, B, C, D, E, F>(Task<A> callbackA,
             Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE, Task<F> callbackF) =>
-                new AsyncApplicative<A, B, C, D, E, F>(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF);
+            new AsyncApplicative<A, B, C, D, E, F>(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF);
     }
 }

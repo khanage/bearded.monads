@@ -18,13 +18,14 @@ namespace Bearded.Monads
         public static Func<A, C> comp<A, B, C>(Func<A, B> f1, Func<B, C> f2)
             => a => f2(f1(a));
 
-        public static AlwaysSyntax<A> always<A>(A val) => new AlwaysSyntax<A>(val);
+        public static AlwaysSyntax<A> always<A>(Func<A> val) => new AlwaysSyntax<A>(val);
+        public static AlwaysSyntax<A> always<A>(A literalVal) => new AlwaysSyntax<A>(() => literalVal);
         public class AlwaysSyntax<A>
         {
-            private readonly A val;
-            public AlwaysSyntax(A val) => this.val = val;
+            private readonly Func<A> val;
+            public AlwaysSyntax(Func<A> val) => this.val = val;
 
-            public A func<B>(B _) => val;
+            public A func<B>(B _) => val();
         }
 
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>

@@ -228,6 +228,9 @@ namespace Bearded.Monads
             {
                 return other.IsSome && this.ForceValue().Equals(other.ForceValue());
             }
+
+            public override string ToString()
+                => "Some(" + force + ")";
         }
 
         [DebuggerDisplay("None")]
@@ -264,6 +267,9 @@ namespace Bearded.Monads
             {
                 return ReferenceEquals(this, other);
             }
+
+            public override string ToString()
+                => "None";
         }
     }
 }

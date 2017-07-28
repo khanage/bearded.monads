@@ -1,4 +1,5 @@
 using System;
+using static Bearded.Monads.Syntax;
 
 namespace Bearded.Monads
 {
@@ -70,16 +71,16 @@ namespace Bearded.Monads
             return errorCallback();
         }
 
-        public static Result Else<A, Error, Result>(this EitherSuccessOrError<A, Error> either, 
+        public static Result Else<A, Error, Result>(this EitherSuccessOrError<A, Error> either,
             Func<A, Result> happy,
             Func<Error, Result> sad)
         {
-            return either.IsSuccess 
+            return either.IsSuccess
                 ? happy(either.AsSuccess.Value)
                 : sad(either.AsError.Value);
         }
 
-        public static EitherSuccessOrError<Result, Exception> SafeCallback<Incoming, Result>(this Incoming item, 
+        public static EitherSuccessOrError<Result, Exception> SafeCallback<Incoming, Result>(this Incoming item,
             Func<Incoming, Result> callback)
         {
             try
@@ -138,6 +139,10 @@ namespace Bearded.Monads
         public static A ElseThrow<A>(this EitherSuccessOrError<A, string> either)
         {
             return either.Else(message => { throw new Exception(message); });
-        } 
+        }
+
+        public static EitherSuccessOrError<A, Error> Flatten<A, Error>(
+            this EitherSuccessOrError<EitherSuccessOrError<A, Error>, Error> ee)
+            => ee.SelectMany(id);
     }
 }

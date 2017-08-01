@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using static Bearded.Monads.Syntax;
 
 namespace Bearded.Monads
@@ -144,5 +146,26 @@ namespace Bearded.Monads
         public static EitherSuccessOrError<A, Error> Flatten<A, Error>(
             this EitherSuccessOrError<EitherSuccessOrError<A, Error>, Error> ee)
             => ee.SelectMany(id);
+
+        public static EitherSuccessOrError<IEnumerable<B>, Error> Traverse<A, B, Error>(
+            this IEnumerable<A> enumerable,
+            Func<A, EitherSuccessOrError<B, Error>> callback)
+        {
+            var mapped = enumerable.Select(callback).ToList();
+
+            var maybeError = mapped.FirstOrNone(x => x.IsError).Select(x => x.AsError.Value);
+
+            return !maybeError.IsSome
+                ? EitherSuccessOrError<IEnumerable<B>,Error>.Create(mapped.Select(x => x.AsSuccess.Value))
+                : maybeError.ForceValue();
+        }
+
+        public static EitherSuccessOrError<IEnumerable<A>, Error> Sequence<A, Error>(
+            this IEnumerable<EitherSuccessOrError<A, Error>> incoming)
+            => incoming.Traverse(id);
+
+        public static EitherSuccessOrError<A, Error> WhereNot<A, Error>(this EitherSuccessOrError<A, Error> incoming,
+            Predicate<A> notPredicate, Func<Error> errorCallback)
+            => incoming.Where(x => !notPredicate(x), errorCallback);
     }
 }

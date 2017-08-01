@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
 using Xunit;
 using Bearded.Monads;
 
@@ -191,14 +193,89 @@ namespace Bearded.Monads.Tests
             Assert.Equal(firstValue, stuff.AsError.Value);
         }
 
+        [Fact]
+        public void Traverse_Either_Ok()
+        {
+            var input = Enumerable.Range(1, 10);
+
+            EitherSuccessOrError<int, string> isLessThan100(int i)
+            {
+                if (i < 100) return i;
+                return "Failed";
+            }
+
+            var result = input.Traverse(isLessThan100);
+
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public void Traverse_Either_NotOk()
+        {
+            var input = Enumerable.Range(100, 10);
+
+            EitherSuccessOrError<int, string> isLessThan100(int i)
+            {
+                if (i < 100) return i;
+                return "Failed";
+            }
+
+            var result = input.Traverse(isLessThan100);
+
+            Assert.True(result.IsError);
+        }
+
+        [Fact]
+        public void Sequence_OK()
+        {
+            var input = Enumerable.Range(1, 100).Select(EitherSuccessOrError<int, string>.Create);
+
+            var result = input.Sequence();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(100, result.Select(l => l.Count()).AsSuccess.Value);
+        }
+
+        [Fact]
+        public void Sequence_NotOK()
+        {
+            var input = Enumerable.Range(1, 100).Select(EitherSuccessOrError<int, string>.Create).Append(EitherSuccessOrError<int,string>.Create("Failed"));
+
+            var result = input.Sequence();
+
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void WhereNot_Ok()
+        {
+            var expected = 10;
+            var input = EitherSuccessOrError<int, string>.Create(expected);
+            var result = input.WhereNot(i => i > 10, () => "Fail");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(expected, result.AsSuccess.Value);
+        }
+
+        [Fact]
+        public void WhereNot_NotOk()
+        {
+            var input = EitherSuccessOrError<int, string>.Create(100);
+            var expected = "Fail";
+            var result = input.WhereNot(i => i > 10, () => expected);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(expected, result.AsError.Value);
+        }
+
         #region Monad laws
         [Fact]
         public void LeftIdentity()
         {
             // forall a b, f :: (a -> Either a b). return a >>= f === f a
             // if we call selectmany with a function on a single value
-            // the result should be the same as call the function directly 
-            // without 
+            // the result should be the same as call the function directly
+            // without
 
             var someName = "Wadler";
             EitherSuccessOrError<string, int> either = someName;

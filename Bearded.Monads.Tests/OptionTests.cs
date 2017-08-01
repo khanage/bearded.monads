@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bearded.Monads;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Bearded.Monads.Tests
 {
@@ -681,6 +682,51 @@ namespace Bearded.Monads.Tests
                 async x => await Task.FromResult(0));
 
             Assert.Equal(Option<int>.None, result);
+        }
+
+        [Fact]
+        public void Traverse_Ok()
+        {
+            var input = Enumerable.Range(1, 10);
+
+            Option<int> isLessThan100(int i) => Option<int>.Return(i).Where(n => n < 100);
+
+            var result = input.Traverse(isLessThan100);
+
+            Assert.True(result.IsSome);
+        }
+
+        [Fact]
+        public void Traverse_NotOk()
+        {
+            var input = Enumerable.Range(100, 10);
+
+            Option<int> isLessThan100(int i) => Option<int>.Return(i).Where(n => n < 100);
+
+            var result = input.Traverse(isLessThan100);
+
+            Assert.False(result.IsSome);
+        }
+
+        [Fact]
+        public void Sequence_Ok()
+        {
+            var input = Enumerable.Range(1, 10).Select(Option.Return);
+
+            var result = input.Sequence();
+
+            Assert.True(result.IsSome);
+            result.Do(l => Assert.Equal(10, l.Count()));
+        }
+
+        [Fact]
+        public void Sequence_NotOk()
+        {
+            var input = Enumerable.Range(1, 10).Select(Option.Return).Append(Option<int>.None);
+
+            var result = input.Sequence();
+
+            Assert.False(result.IsSome);
         }
 
         #region Monad laws

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using static Bearded.Monads.Syntax;
 
 namespace Bearded.Monads
 {
@@ -95,7 +96,7 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
-        public static Option<A> NoneIfEmpty<A>(this A? nullable) where A : struct 
+        public static Option<A> NoneIfEmpty<A>(this A? nullable) where A : struct
         {
             if (nullable.HasValue)
                 return nullable.Value;
@@ -312,5 +313,18 @@ namespace Bearded.Monads
 
             return await act(source.ForceValue());
         }
+
+        public static Option<IEnumerable<B>> Traverse<A, B>(this IEnumerable<A> enumerable, Func<A, Option<B>> callback)
+        {
+            var allOptions = enumerable.Select(callback).ToList();
+
+            return allOptions.Any(x => !x.IsSome)
+                ? Option<IEnumerable<B>>.None
+                : allOptions.Select(x => x.ForceValue())
+                    .NoneIfNull();
+        }
+
+        public static Option<IEnumerable<A>> Sequence<A>(this IEnumerable<Option<A>> incoming)
+            => incoming.Traverse(id);
     }
 }

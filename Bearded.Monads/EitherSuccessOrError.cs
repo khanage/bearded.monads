@@ -12,11 +12,11 @@ namespace Bearded.Monads
         public bool IsSuccess => this is SuccessContainer;
 
         [DebuggerStepThrough]
-        public static EitherSuccessOrError<Success, Error> Create(Error value) => 
+        public static EitherSuccessOrError<Success, Error> Create(Error value) =>
             new ErrorContainer(value);
 
         [DebuggerStepThrough]
-        public static EitherSuccessOrError<Success, Error> Create(Success value) => 
+        public static EitherSuccessOrError<Success, Error> Create(Success value) =>
             new SuccessContainer(value);
 
         #region Abstract methods
@@ -29,11 +29,11 @@ namespace Bearded.Monads
 
         #region Operators
         [DebuggerStepThrough]
-        public static implicit operator EitherSuccessOrError<Success, Error>(Error error) => 
+        public static implicit operator EitherSuccessOrError<Success, Error>(Error error) =>
             new ErrorContainer(error);
 
         [DebuggerStepThrough]
-        public static implicit operator EitherSuccessOrError<Success, Error>(Success success) => 
+        public static implicit operator EitherSuccessOrError<Success, Error>(Success success) =>
             new SuccessContainer(success);
 
         #endregion
@@ -65,10 +65,10 @@ namespace Bearded.Monads
             return this.AsError.Value.GetHashCode();
         }
 
-        public static bool operator ==(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) => 
+        public static bool operator ==(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) =>
             Equals(left, right);
 
-        public static bool operator !=(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) => 
+        public static bool operator !=(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) =>
             !Equals(left, right);
 
         #region Implementations
@@ -101,10 +101,10 @@ namespace Bearded.Monads
 
             public Success Value { get; set; }
 
-            public override EitherSuccessOrError<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper) => 
+            public override EitherSuccessOrError<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper) =>
                 mapper(this.Value);
 
-            public override void Do(Action<Success> successCallback, Action<Error> errorCallback) => 
+            public override void Do(Action<Success> successCallback, Action<Error> errorCallback) =>
                 successCallback(this.Value);
         }
         #endregion

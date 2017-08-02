@@ -82,19 +82,6 @@ namespace Bearded.Monads
                 : sad(either.AsError.Value);
         }
 
-        public static EitherSuccessOrError<Result, Exception> SafeCallback<Incoming, Result>(this Incoming item,
-            Func<Incoming, Result> callback)
-        {
-            try
-            {
-                return callback(item);
-            }
-            catch (Exception e)
-            {
-                return e;
-            }
-        }
-
         public static Result Unify<Success, Error, Result>(this EitherSuccessOrError<Success, Error> either,
            Func<Success, Result> successFunc, Func<Error, Result> errorFunc)
         {

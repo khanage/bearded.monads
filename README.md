@@ -1,7 +1,9 @@
 Bearded.Monads
 ============
 
-Neckbeard monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
+![build:passing](https://travis-ci.org/khanage/bearded.monads.svg?branch=master)
+
+Monads monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
 Currently provides Option and Either, as they are usefull for error checking, as well as task.
 
@@ -13,7 +15,7 @@ Bearded.Monads is available from NuGet:
 
 `Install-Package Bearded.Monads`
 
-Then, just add `using Bearded.Monads;` to the top of your C# source file.
+Then, just add `using Bearded.Monads;` to the top of your C# source file. There is also a `Bearded.Monads.Syntax` module that you can reference using `using static Bearded.Monads.Syntax;` with your other using statements. 
 
 ## Option
 
@@ -145,6 +147,10 @@ public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitu
 }
 ```
 
+## Try
+
+This is similar to Either, but uses an exception in the error case. This is useful for things like the `SafeCallback` extension method over all objects, which provides an ergonomic version of wrapping everything in a try-catch block.
+
 ## Task Applicative (aka Asynquence)
 
 This is probable the most interesting use of `Task`. This allows one to chain together a sequence of tasks and provide a callback at the end to produce a final result.
@@ -152,7 +158,7 @@ This is probable the most interesting use of `Task`. This allows one to chain to
 It's recommended to use the below to bring the class into scope directly.
  
 ```
-using static Bearded.Monads.AsyncApplicative;
+using static Bearded.Monads.Syntax;
 ```
 
 Then usage is as follows:

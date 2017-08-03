@@ -100,8 +100,8 @@ namespace Bearded.Monads.Tests
 
             sw.Stop();
 
-            Assert.True(sw.ElapsedMilliseconds >= millisecondsPerCall 
-                     && sw.ElapsedMilliseconds <= millisecondsPerCall * 2);
+            Assert.True(sw.ElapsedMilliseconds >= millisecondsPerCall, $"Took at least {millisecondsPerCall}ms");
+            Assert.True(sw.ElapsedMilliseconds <= millisecondsPerCall * 2, $"Took no longer than {millisecondsPerCall * 2}ms");
         }
 
         [Fact]

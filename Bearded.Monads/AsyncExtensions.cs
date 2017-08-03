@@ -14,6 +14,9 @@ namespace Bearded.Monads
             return project(a, b);
         }
 
+        public static Task<B> SelectMany<A, B>(this Task<A> task, Func<A, Task<B>> bind)
+            => task.SelectMany(bind, (_, b) => b);
+
         public static Task<A> Run<A>(this Task<A> task)
         {
             if (task.Status == TaskStatus.Created) task.Start();

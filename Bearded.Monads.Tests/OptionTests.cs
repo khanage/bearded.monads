@@ -579,8 +579,7 @@ namespace Bearded.Monads.Tests
             string n = null;
             Option<string> none = n;
 
-            Assert.True(none);
-            Assert.Equal(null, none.ForceValue());
+            Assert.False(none);
         }
 
         [Theory]

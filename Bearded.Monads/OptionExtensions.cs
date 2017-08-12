@@ -10,6 +10,59 @@ namespace Bearded.Monads
     public static class OptionExtensions
     {
         [DebuggerStepThrough]
+        public static void Do<A>(this Option<A> option, Action<A> callback)
+        {
+            option.Do(callback, () => { });
+        }
+
+        [DebuggerStepThrough]
+        public static A ElseDefault<A>(this Option<A> option)
+        {
+            return option.Else(() => default(A));
+        }
+
+        [DebuggerStepThrough]
+        public static Option<Tuple<A, B>> Concat<A, B>(this Option<A> oa, Option<B> ob)
+        {
+            return oa.SelectMany(a => ob.Map(b => Tuple.Create(a, b)));
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> Where<A>(this Option<A> option, Predicate<A> pred)
+        {
+            return option.SelectMany(a => pred(a) ? option : Option<A>.None);
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> Empty<A>(this Option<A> option, Action nullCallback)
+        {
+            return option.WhenNone(nullCallback);
+        }
+
+
+        [DebuggerStepThrough]
+        public static Option<A> WhenSome<A>(this Option<A> option, Action<A> callback)
+        {
+            option.Do(callback, () => { });
+
+            return option;
+        }
+
+        [DebuggerStepThrough]
+        public static Option<A> WhenNone<A>(this Option<A> option, Action callback)
+        {
+            option.Do(a => { }, callback);
+
+            return option;
+        }
+
+        [DebuggerStepThrough]
+        public static Option<B> SelectMany<A, B>(this Option<A> option, Func<A, Option<B>> mapper)
+        {
+            return option.Map(mapper).Else(() => Option<B>.None);
+        }
+
+        [DebuggerStepThrough]
         public static Option<C> SelectMany<A, B, C>(this Option<A> ma, Func<A, Option<B>> mapB, Func<A, B, C> mapper)
         {
             var defaultValue = Option<C>.None;

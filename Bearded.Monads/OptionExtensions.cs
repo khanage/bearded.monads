@@ -65,32 +65,16 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<C> SelectMany<A, B, C>(this Option<A> ma, Func<A, Option<B>> mapB, Func<A, B, C> mapper)
         {
-            var defaultValue = Option<C>.None;
-
-            if (!ma.IsSome)
-            {
-                return defaultValue;
-            }
-
-            var a = ma.ForceValue();
-
-            var mb = mapB(a);
-
-            if (!mb.IsSome)
-            {
-                return defaultValue;
-            }
-
-            var b = mb.ForceValue();
-
-            return mapper(a, b);
+            return ma.SelectMany(a => mapB(a).Map(b => mapper(a, b)));
         }
 
+        [DebuggerStepThrough]
         public static Option<A> Or<A>(this Option<A> left, Option<A> right)
         {
             return left | right;
         }
 
+        [DebuggerStepThrough]
         public static Option<A> Or<A>(this Option<A> left, Func<Option<A>> right)
         {
             return left | right;
@@ -122,12 +106,7 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<A> Then<A>(this bool predicate, Func<A> callbackForTrue)
         {
-            if (!predicate)
-            {
-                return Option<A>.None;
-            }
-
-            return callbackForTrue();
+            return predicate ? callbackForTrue() : Option<A>.None;
         }
 
         [Obsolete("This call is equivalent to .AsOption")]
@@ -141,38 +120,25 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<bool> NoneIfFalse(this bool val)
         {
-            return val ? (Option<bool>) true : Option<bool>.None;
+            return true.AsOption().Where(_ => val);
         }
 
         [DebuggerStepThrough]
         public static Option<A> NoneIfEmpty<A>(this A? nullable) where A : struct
         {
-            if (nullable.HasValue)
-                return nullable.Value;
-
-            return Option<A>.None;
+            return nullable ?? Option<A>.None;
         }
 
         [DebuggerStepThrough]
         public static Option<Value> MaybeGetValue<Key, Value>(this IDictionary<Key, Value> dict, Key key)
         {
-            Value v;
-
-            if (!dict.TryGetValue(key, out v))
-                return Option<Value>.None;
-
-            return v;
+            return dict.TryGetValue(key, out Value v) ? v : Option<Value>.None;
         }
 
         [DebuggerStepThrough]
         public static Option<IEnumerable<Value>> MaybeGetValues<Key, Value>(this ILookup<Key, Value> lookup, Key key)
         {
-            if (lookup.Contains(key))
-            {
-                return lookup[key].AsOption();
-            }
-
-            return Option<IEnumerable<Value>>.None;
+            return lookup.Contains(key) ? lookup[key].AsOption() : Option<IEnumerable<Value>>.None;
         }
 
         [DebuggerStepThrough]
@@ -184,14 +150,18 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<Result> IfTrueThen<Result>(this bool lookup, Func<Result> result)
         {
-            if (lookup) return result();
-            return Option<Result>.None;
+            return lookup ? result() : Option<Result>.None;
         }
 
         [DebuggerStepThrough]
         public static IEnumerable<A> ConcatOptions<A>(this IEnumerable<Option<A>> options)
         {
-            return options.Where(o => o.IsSome).Select(o => o.ForceValue());
+            return options.SelectMany(MaybeAsEnumerable);
+        }
+
+        public static IEnumerable<A> MaybeAsEnumerable<A>(this Option<A> option)
+        {
+            return option.Map(a => Enumerable.Repeat(a, 1)).ElseEmpty();
         }
 
         [DebuggerStepThrough]
@@ -213,10 +183,7 @@ namespace Bearded.Monads
         {
             var ret = items.Take(2).ToList();
 
-            if (ret.Count != 1)
-                return Option<A>.None;
-
-            return ret[0];
+            return ret.Count != 1 ? Option<A>.None : ret[0];
         }
 
         [DebuggerStepThrough]
@@ -240,12 +207,10 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<A> FirstOrNone<A>(this IEnumerable<A> items, Func<A, bool> predicate)
         {
-            var firstItems = items.Where(predicate).Take(1).ToList();
+            foreach (var item in items.Where(predicate))
+                return item;
 
-            if (firstItems.Count == 0)
-                return Option<A>.None;
-
-            return firstItems[0];
+            return Option<A>.None;
         }
 
         [DebuggerStepThrough]
@@ -321,18 +286,13 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static A ElseThrow<A>(this Option<A> option, Func<Exception> exceptionCallback)
         {
-            if (option.IsSome) return option.ForceValue();
-            throw exceptionCallback();
+            return option.Else(() => throw exceptionCallback());
         }
 
         [DebuggerStepThrough]
         public static Option<A> MaybeGetReference<A>(this WeakReference<A> refToItem) where A : class
         {
-            A item;
-            if (refToItem.TryGetTarget(out item))
-                return item;
-
-            return Option<A>.None;
+            return refToItem.TryGetTarget(out var item) ? item : Option<A>.None;
         }
 
         [DebuggerStepThrough]
@@ -363,16 +323,22 @@ namespace Bearded.Monads
             return await act(source.ForceValue());
         }
 
-        public static Option<IEnumerable<B>> Traverse<A, B>(this IEnumerable<A> enumerable, Func<A, Option<B>> callback)
+        [DebuggerStepThrough]
+        public static Option<IEnumerable<A>> AllOrNone<A>(this IEnumerable<Option<A>> options)
         {
-            var allOptions = enumerable.Select(callback).ToList();
-
-            return allOptions.Any(x => !x.IsSome)
-                ? Option<IEnumerable<B>>.None
-                : allOptions.Select(x => x.ForceValue())
-                    .NoneIfNull();
+            var result = new List<A>();
+            return options.All(option => option.WhenSome(result.Add))
+                ? result.AsOption<IEnumerable<A>>()
+                : Option<IEnumerable<A>>.None;
         }
 
+        [DebuggerStepThrough]
+        public static Option<IEnumerable<B>> Traverse<A, B>(this IEnumerable<A> enumerable, Func<A, Option<B>> callback)
+        {
+            return enumerable.Select(callback).AllOrNone();
+        }
+
+        [DebuggerStepThrough]
         public static Option<IEnumerable<A>> Sequence<A>(this IEnumerable<Option<A>> incoming)
             => incoming.Traverse(id);
     }

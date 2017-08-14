@@ -77,16 +77,12 @@ namespace Bearded.Monads
             return callbackForTrue();
         }
 
+        [Obsolete("This call is equivalent to .AsOption")]
         [DebuggerStepThrough]
         public static Option<A> NoneIfNull<A>(this A val)
             where A : class
         {
-            if (val != null)
-            {
-                return val;
-            }
-
-            return Option<A>.None;
+            return val;
         }
 
         [DebuggerStepThrough]

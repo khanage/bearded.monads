@@ -22,7 +22,7 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Option<A> Return(A a)
         {
-            return new Some(a);
+            return ReferenceEquals(null, a) ? None : new Some(a);
         }
 
         [DebuggerStepThrough]
@@ -126,13 +126,8 @@ namespace Bearded.Monads
             return SelectMany(ct => ct.MaybeCast<CastTarget>());
         }
 
-        public static implicit operator Option<A>(A value)
-        {
-            if ((typeof (A).IsByRef) && Equals(null, value))
-                return None;
+        public static implicit operator Option<A>(A value) => Return(value);
 
-            return Return(value);
-        }
 
         public static bool operator true(Option<A> value)
         {

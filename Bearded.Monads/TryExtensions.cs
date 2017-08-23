@@ -45,6 +45,13 @@ namespace Bearded.Monads
             }
         }
 
+        public static OptionUnsafe<A> AsOptionUnsafe<A>(this Try<A> either, Action<Exception> callback)
+            => either.Else(OptionUnsafe<A>.Return, e =>
+            {
+                callback(e);
+                return OptionUnsafe<A>.None;
+            });
+
         public static Option<A> AsOption<A>(this Try<A> either, Action<Exception> callback)
             => either.Else(Option<A>.Return, e =>
             {

@@ -34,6 +34,16 @@ namespace Bearded.Monads
             return Option<float>.None;
         }
 
+        public static Option<decimal> MaybeDecimal(this string value)
+        {
+            decimal val;
+
+            if (decimal.TryParse(value, out val))
+                return val;
+
+            return Option<decimal>.None;
+        }
+
         public static Option<long> MaybeLong(this string value)
         {
             long val;

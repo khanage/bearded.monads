@@ -708,6 +708,14 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
+        public void EmptyNullable_ElseDefault_Null()
+        {
+            Option<long?> thing = Option<long?>.None;
+
+            Assert.Null(thing.ElseDefault());
+        }
+
+        [Fact]
         public void Sequence_Ok()
         {
             var input = Enumerable.Range(1, 10).Select(Option.Return);

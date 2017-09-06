@@ -447,6 +447,17 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
+        public void MaybeCast_OK()
+        {
+            var downcast = (object)4;
+
+            var result = downcast.MaybeCast<int>();
+
+            Assert.True(result.IsSome);
+            Assert.Equal(4, result.ForceValue());
+        }
+
+        [Fact]
         public void TryGetValueForMissingKey()
         {
             var key = "hello";

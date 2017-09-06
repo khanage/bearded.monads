@@ -153,7 +153,7 @@ namespace Bearded.Monads
 
         public static Try<A> Flatten<A>(
             this Try<Try<A>> ee)
-            => ee.SelectMany(Syntax.id);
+            => ee.SelectMany(id);
 
         public static Try<IEnumerable<B>> Traverse<A, B>(
             this IEnumerable<A> enumerable,
@@ -170,7 +170,7 @@ namespace Bearded.Monads
 
         public static Try<IEnumerable<A>> Sequence<A>(
             this IEnumerable<Try<A>> incoming)
-            => incoming.Traverse(Syntax.id);
+            => incoming.Traverse(id);
 
         public static Try<A> WhereNot<A>(this Try<A> incoming,
             Predicate<A> notPredicate, Func<Exception> errorCallback)

@@ -7,7 +7,7 @@ namespace Bearded.Monads
 {
     public static class EitherExtensions
     {
-        public static Option<Success> AsOption<Success, Error>(this EitherSuccessOrError<Success, Error> withError, Action<Error> errorCallback)
+        public static Option<Success> AsOption<Success, Error>(this Either<Success, Error> withError, Action<Error> errorCallback)
         {
             if (withError.IsError)
             {
@@ -18,7 +18,7 @@ namespace Bearded.Monads
             return withError.AsSuccess.Value;
         }
 
-        public static EitherSuccessOrError<Success, Error> AsEither<Success, Error>(this Option<Success> option, Error errorValue)
+        public static Either<Success, Error> AsEither<Success, Error>(this Option<Success> option, Error errorValue)
         {
             if (option.IsSome)
                 return option.ForceValue();
@@ -26,14 +26,14 @@ namespace Bearded.Monads
             return errorValue;
         }
 
-        public static EitherSuccessOrError<Success, String> AsEither<Success>(this Option<Success> option, string format, params object[] formatArgs)
+        public static Either<Success, String> AsEither<Success>(this Option<Success> option, string format, params object[] formatArgs)
         {
             return option.AsEither(string.Format(format, formatArgs));
         }
 
-        public static EitherSuccessOrError<B, Error> SelectMany<A, B, Error>(
-            this EitherSuccessOrError<A, Error> aOrError,
-            Func<A, EitherSuccessOrError<B, Error>> mapper)
+        public static Either<B, Error> SelectMany<A, B, Error>(
+            this Either<A, Error> aOrError,
+            Func<A, Either<B, Error>> mapper)
         {
             if (aOrError.IsError) return aOrError.AsError.Value;
 
@@ -42,9 +42,9 @@ namespace Bearded.Monads
             return mapper(a);
         }
 
-        public static EitherSuccessOrError<C, Error> SelectMany<A, B, C, Error>(
-            this EitherSuccessOrError<A, Error> aOrError,
-            Func<A, EitherSuccessOrError<B, Error>> mapToB,
+        public static Either<C, Error> SelectMany<A, B, C, Error>(
+            this Either<A, Error> aOrError,
+            Func<A, Either<B, Error>> mapToB,
             Func<A, B, C> mapper)
         {
             if (aOrError.IsError) return aOrError.AsError.Value;
@@ -60,12 +60,12 @@ namespace Bearded.Monads
             return mapper(a, b);
         }
 
-        public static EitherSuccessOrError<B, Error> Select<A, Error, B>(this EitherSuccessOrError<A, Error> either, Func<A, B> projector)
+        public static Either<B, Error> Select<A, Error, B>(this Either<A, Error> either, Func<A, B> projector)
         {
             return either.Map(projector);
         }
 
-        public static EitherSuccessOrError<A, Error> Where<A, Error>(this EitherSuccessOrError<A, Error> either,
+        public static Either<A, Error> Where<A, Error>(this Either<A, Error> either,
             Predicate<A> predicate, Func<Error> errorCallback)
         {
             if (either.IsError) return either;
@@ -73,7 +73,7 @@ namespace Bearded.Monads
             return errorCallback();
         }
 
-        public static Result Else<A, Error, Result>(this EitherSuccessOrError<A, Error> either,
+        public static Result Else<A, Error, Result>(this Either<A, Error> either,
             Func<A, Result> happy,
             Func<Error, Result> sad)
         {
@@ -82,14 +82,14 @@ namespace Bearded.Monads
                 : sad(either.AsError.Value);
         }
 
-        public static Result Unify<Success, Error, Result>(this EitherSuccessOrError<Success, Error> either,
+        public static Result Unify<Success, Error, Result>(this Either<Success, Error> either,
            Func<Success, Result> successFunc, Func<Error, Result> errorFunc)
         {
             if (either.IsSuccess) return successFunc(either.AsSuccess.Value);
             return errorFunc(either.AsError.Value);
         }
 
-        public static Success Else<Success, Error>(this EitherSuccessOrError<Success, Error> either,
+        public static Success Else<Success, Error>(this Either<Success, Error> either,
             Func<Error, Success> callback)
         {
             if (either.IsError) return callback(either.AsError.Value);
@@ -97,7 +97,7 @@ namespace Bearded.Monads
             return either.AsSuccess.Value;
         }
 
-        public static EitherSuccessOrError<A, Error> WhenSuccess<A, Error>(this EitherSuccessOrError<A, Error> either,
+        public static Either<A, Error> WhenSuccess<A, Error>(this Either<A, Error> either,
             Action<A> callbackForSuccess)
         {
             if (either.IsSuccess)
@@ -108,7 +108,7 @@ namespace Bearded.Monads
             return either;
         }
 
-        public static EitherSuccessOrError<A, Error> WhenError<A, Error>(this EitherSuccessOrError<A, Error> either,
+        public static Either<A, Error> WhenError<A, Error>(this Either<A, Error> either,
             Action<Error> callbackForError)
         {
             if (either.IsError)
@@ -119,39 +119,39 @@ namespace Bearded.Monads
             return either;
         }
 
-        public static A ElseThrow<A, TException>(this EitherSuccessOrError<A, TException> either)
+        public static A ElseThrow<A, TException>(this Either<A, TException> either)
             where TException : Exception
         {
             return either.Else(exc => { throw exc; });
         }
 
-        public static A ElseThrow<A>(this EitherSuccessOrError<A, string> either)
+        public static A ElseThrow<A>(this Either<A, string> either)
         {
             return either.Else(message => { throw new Exception(message); });
         }
 
-        public static EitherSuccessOrError<A, Error> Flatten<A, Error>(
-            this EitherSuccessOrError<EitherSuccessOrError<A, Error>, Error> ee)
+        public static Either<A, Error> Flatten<A, Error>(
+            this Either<Either<A, Error>, Error> ee)
             => ee.SelectMany(id);
 
-        public static EitherSuccessOrError<IEnumerable<B>, Error> Traverse<A, B, Error>(
+        public static Either<IEnumerable<B>, Error> Traverse<A, B, Error>(
             this IEnumerable<A> enumerable,
-            Func<A, EitherSuccessOrError<B, Error>> callback)
+            Func<A, Either<B, Error>> callback)
         {
             var mapped = enumerable.Select(callback).ToList();
 
             var maybeError = mapped.FirstOrNone(x => x.IsError).Select(x => x.AsError.Value);
 
             return !maybeError.IsSome
-                ? EitherSuccessOrError<IEnumerable<B>,Error>.Create(mapped.Select(x => x.AsSuccess.Value))
+                ? Either<IEnumerable<B>,Error>.Create(mapped.Select(x => x.AsSuccess.Value))
                 : maybeError.ForceValue();
         }
 
-        public static EitherSuccessOrError<IEnumerable<A>, Error> Sequence<A, Error>(
-            this IEnumerable<EitherSuccessOrError<A, Error>> incoming)
+        public static Either<IEnumerable<A>, Error> Sequence<A, Error>(
+            this IEnumerable<Either<A, Error>> incoming)
             => incoming.Traverse(id);
 
-        public static EitherSuccessOrError<A, Error> WhereNot<A, Error>(this EitherSuccessOrError<A, Error> incoming,
+        public static Either<A, Error> WhereNot<A, Error>(this Either<A, Error> incoming,
             Predicate<A> notPredicate, Func<Error> errorCallback)
             => incoming.Where(x => !notPredicate(x), errorCallback);
     }

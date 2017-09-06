@@ -3,7 +3,10 @@ using System.Diagnostics;
 
 namespace Bearded.Monads
 {
-    public abstract class EitherSuccessOrError<Success, Error> : IEquatable<EitherSuccessOrError<Success, Error>>
+    [Obsolete("EitherSuccessOrError has been renamed to Either")]
+    public abstract class EitherSuccessOrError<Success, Error> {}
+
+    public abstract class Either<Success, Error> : IEquatable<Either<Success, Error>>
     {
         public ErrorContainer AsError => this as ErrorContainer;
         public SuccessContainer AsSuccess => this as SuccessContainer;
@@ -12,16 +15,16 @@ namespace Bearded.Monads
         public bool IsSuccess => this is SuccessContainer;
 
         [DebuggerStepThrough]
-        public static EitherSuccessOrError<Success, Error> Create(Error value) =>
+        public static Either<Success, Error> Create(Error value) =>
             new ErrorContainer(value);
 
         [DebuggerStepThrough]
-        public static EitherSuccessOrError<Success, Error> Create(Success value) =>
+        public static Either<Success, Error> Create(Success value) =>
             new SuccessContainer(value);
 
         #region Abstract methods
         [DebuggerStepThrough]
-        public abstract EitherSuccessOrError<NextSuccess,Error> Map<NextSuccess>(Func<Success,NextSuccess> mapper);
+        public abstract Either<NextSuccess,Error> Map<NextSuccess>(Func<Success,NextSuccess> mapper);
 
         [DebuggerStepThrough]
         public abstract void Do(Action<Success> successCallback, Action<Error> errorCallback);
@@ -29,16 +32,16 @@ namespace Bearded.Monads
 
         #region Operators
         [DebuggerStepThrough]
-        public static implicit operator EitherSuccessOrError<Success, Error>(Error error) =>
+        public static implicit operator Either<Success, Error>(Error error) =>
             new ErrorContainer(error);
 
         [DebuggerStepThrough]
-        public static implicit operator EitherSuccessOrError<Success, Error>(Success success) =>
+        public static implicit operator Either<Success, Error>(Success success) =>
             new SuccessContainer(success);
 
         #endregion
 
-        public bool Equals(EitherSuccessOrError<Success, Error> other)
+        public bool Equals(Either<Success, Error> other)
         {
             if (this.IsSuccess && other.IsSuccess)
                 return this.AsSuccess.Value.Equals(other.AsSuccess.Value);
@@ -54,7 +57,7 @@ namespace Bearded.Monads
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((EitherSuccessOrError<Success, Error>) obj);
+            return Equals((Either<Success, Error>) obj);
         }
 
         public override int GetHashCode()
@@ -65,14 +68,14 @@ namespace Bearded.Monads
             return this.AsError.Value.GetHashCode();
         }
 
-        public static bool operator ==(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) =>
+        public static bool operator ==(Either<Success, Error> left, Either<Success, Error> right) =>
             Equals(left, right);
 
-        public static bool operator !=(EitherSuccessOrError<Success, Error> left, EitherSuccessOrError<Success, Error> right) =>
+        public static bool operator !=(Either<Success, Error> left, Either<Success, Error> right) =>
             !Equals(left, right);
 
         #region Implementations
-        public class ErrorContainer : EitherSuccessOrError<Success, Error>
+        public class ErrorContainer : Either<Success, Error>
         {
             public ErrorContainer(Error value)
             {
@@ -81,7 +84,7 @@ namespace Bearded.Monads
 
             public Error Value { get; set; }
 
-            public override EitherSuccessOrError<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper)
+            public override Either<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper)
             {
                 return this.Value;
             }
@@ -92,7 +95,7 @@ namespace Bearded.Monads
             }
         }
 
-        public class SuccessContainer : EitherSuccessOrError<Success, Error>
+        public class SuccessContainer : Either<Success, Error>
         {
             public SuccessContainer(Success value)
             {
@@ -101,7 +104,7 @@ namespace Bearded.Monads
 
             public Success Value { get; set; }
 
-            public override EitherSuccessOrError<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper) =>
+            public override Either<NextValue, Error> Map<NextValue>(Func<Success, NextValue> mapper) =>
                 mapper(this.Value);
 
             public override void Do(Action<Success> successCallback, Action<Error> errorCallback) =>

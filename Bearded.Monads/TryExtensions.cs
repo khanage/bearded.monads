@@ -59,19 +59,19 @@ namespace Bearded.Monads
                 return Option<A>.None;
             });
 
-        public static EitherSuccessOrError<A, Exception> AsEither<A>(this Try<A> either)
+        public static Either<A, Exception> AsEither<A>(this Try<A> either)
             => either.AsEither(id);
 
-        public static EitherSuccessOrError<A, Error> AsEither<A, Error>(this Try<A> either, Func<Exception, Error> errorMap)
-            => either.Else(EitherSuccessOrError<A, Error>.Create, ex => errorMap(ex));
+        public static Either<A, Error> AsEither<A, Error>(this Try<A> either, Func<Exception, Error> errorMap)
+            => either.Else(Either<A, Error>.Create, ex => errorMap(ex));
 
         public static Try<A> AsTry<A>(this Option<A> option, Func<Exception> errorCallback)
             => option.Select(Try<A>.Create).Else(() => Try<A>.Create(errorCallback()));
 
-        public static Try<A> AsTry<A, Error>(this EitherSuccessOrError<A, Error> either, Func<Error, Exception> errorTransform)
+        public static Try<A> AsTry<A, Error>(this Either<A, Error> either, Func<Error, Exception> errorTransform)
             => either.Unify(Try<A>.Create, e => Try<A>.Create(errorTransform(e)));
 
-        public static Try<A> AsTry<A>(this EitherSuccessOrError<A, Exception> either)
+        public static Try<A> AsTry<A>(this Either<A, Exception> either)
             => either.Unify(Try<A>.Create, Try<A>.Create);
 
         public static Try<B> Select<A, B>(this Try<A> either, Func<A, B> projector)

@@ -13,7 +13,7 @@ namespace Bearded.Monads.Tests
         {
             var expected = 42;
 
-            var value = EitherSuccessOrError<int, string>.Create(expected);
+            var value = Either<int, string>.Create(expected);
 
             Assert.True(value.IsSuccess);
             Assert.False(value.IsError);
@@ -26,7 +26,7 @@ namespace Bearded.Monads.Tests
         {
             var errorMessage = "fail";
 
-            var value = EitherSuccessOrError<int, string>.Create(errorMessage);
+            var value = Either<int, string>.Create(errorMessage);
 
             Assert.True(value.IsError);
             Assert.False(value.IsSuccess);
@@ -40,7 +40,7 @@ namespace Bearded.Monads.Tests
             var givenValue = 42;
             var expectedValue = givenValue + 1;
 
-            var value = EitherSuccessOrError<int, string>.Create(givenValue)
+            var value = Either<int, string>.Create(givenValue)
                 .Map(i => i + 1);
 
             Assert.True(value.IsSuccess);
@@ -52,7 +52,7 @@ namespace Bearded.Monads.Tests
         {
             var error = "fail";
 
-            var value = EitherSuccessOrError<int, string>.Create(error)
+            var value = Either<int, string>.Create(error)
                 .Map(i => i + 1);
 
             Assert.True(value.IsError);
@@ -63,7 +63,7 @@ namespace Bearded.Monads.Tests
         public void ImplicitForSuccess()
         {
             var expectedValue = 1;
-            Func<EitherSuccessOrError<int, string>> f;
+            Func<Either<int, string>> f;
             f = () => expectedValue;
 
             Assert.Equal(expectedValue, f().AsSuccess.Value);
@@ -73,7 +73,7 @@ namespace Bearded.Monads.Tests
         public void ImplicitForError()
         {
             var expectedValue = "fail";
-            Func<EitherSuccessOrError<int, string>> f;
+            Func<Either<int, string>> f;
             f = () => expectedValue;
 
             Assert.Equal(expectedValue, f().AsError.Value);
@@ -84,8 +84,8 @@ namespace Bearded.Monads.Tests
         {
             var expectedSucess = 42;
             var expectedError = "fail";
-            Func<Tuple<EitherSuccessOrError<int, string>, EitherSuccessOrError<int, string>>> f;
-            f = () => new Tuple<EitherSuccessOrError<int, string>, EitherSuccessOrError<int, string>>(expectedSucess, expectedError);
+            Func<Tuple<Either<int, string>, Either<int, string>>> f;
+            f = () => new Tuple<Either<int, string>, Either<int, string>>(expectedSucess, expectedError);
 
             var success = f().Item1.AsSuccess;
             var error = f().Item2.AsError;
@@ -99,7 +99,7 @@ namespace Bearded.Monads.Tests
         {
             var expectedSucess = 42;
 
-            EitherSuccessOrError<int, string> either = expectedSucess;
+            Either<int, string> either = expectedSucess;
 
             bool wasCalled = false;
             var option = either.AsOption(e => { wasCalled = true; });
@@ -114,7 +114,7 @@ namespace Bearded.Monads.Tests
         {
             var expectedError = "fail";
 
-            EitherSuccessOrError<int, string> either = expectedError;
+            Either<int, string> either = expectedError;
 
             bool wasCalled = false;
             var option = either.AsOption(e => { wasCalled = true; });
@@ -131,8 +131,8 @@ namespace Bearded.Monads.Tests
 
             var expectedValue = firstValue + secondValue;
 
-            EitherSuccessOrError<int, string> firstEither = firstValue;
-            EitherSuccessOrError<int, string> secondEither = secondValue;
+            Either<int, string> firstEither = firstValue;
+            Either<int, string> secondEither = secondValue;
 
             var stuff =
                 from f in firstEither
@@ -148,8 +148,8 @@ namespace Bearded.Monads.Tests
             var firstError = "fail";
             var secondValue = 42;
 
-            EitherSuccessOrError<int, string> firstEither = firstError;
-            EitherSuccessOrError<int, string> secondEither = secondValue;
+            Either<int, string> firstEither = firstError;
+            Either<int, string> secondEither = secondValue;
 
             var stuff =
                 from f in firstEither
@@ -165,8 +165,8 @@ namespace Bearded.Monads.Tests
             var firstValue = 42;
             var secondError = "fail";
 
-            EitherSuccessOrError<int, string> firstEither = firstValue;
-            EitherSuccessOrError<int, string> secondEither = secondError;
+            Either<int, string> firstEither = firstValue;
+            Either<int, string> secondEither = secondError;
 
             var stuff =
                 from f in firstEither
@@ -182,8 +182,8 @@ namespace Bearded.Monads.Tests
             var firstValue = "epic";
             var secondValue = "fail";
 
-            EitherSuccessOrError<int, string> firstEither = firstValue;
-            EitherSuccessOrError<int, string> secondEither = secondValue;
+            Either<int, string> firstEither = firstValue;
+            Either<int, string> secondEither = secondValue;
 
             var stuff =
                 from f in firstEither
@@ -198,7 +198,7 @@ namespace Bearded.Monads.Tests
         {
             var input = Enumerable.Range(1, 10);
 
-            EitherSuccessOrError<int, string> isLessThan100(int i)
+            Either<int, string> isLessThan100(int i)
             {
                 if (i < 100) return i;
                 return "Failed";
@@ -214,7 +214,7 @@ namespace Bearded.Monads.Tests
         {
             var input = Enumerable.Range(100, 10);
 
-            EitherSuccessOrError<int, string> isLessThan100(int i)
+            Either<int, string> isLessThan100(int i)
             {
                 if (i < 100) return i;
                 return "Failed";
@@ -228,7 +228,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void Sequence_OK()
         {
-            var input = Enumerable.Range(1, 100).Select(EitherSuccessOrError<int, string>.Create);
+            var input = Enumerable.Range(1, 100).Select(Either<int, string>.Create);
 
             var result = input.Sequence();
 
@@ -239,7 +239,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void Sequence_NotOK()
         {
-            var input = Enumerable.Range(1, 100).Select(EitherSuccessOrError<int, string>.Create).Append(EitherSuccessOrError<int,string>.Create("Failed"));
+            var input = Enumerable.Range(1, 100).Select(Either<int, string>.Create).Append(Either<int,string>.Create("Failed"));
 
             var result = input.Sequence();
 
@@ -250,7 +250,7 @@ namespace Bearded.Monads.Tests
         public void WhereNot_Ok()
         {
             var expected = 10;
-            var input = EitherSuccessOrError<int, string>.Create(expected);
+            var input = Either<int, string>.Create(expected);
             var result = input.WhereNot(i => i > 10, () => "Fail");
 
             Assert.True(result.IsSuccess);
@@ -260,7 +260,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void WhereNot_NotOk()
         {
-            var input = EitherSuccessOrError<int, string>.Create(100);
+            var input = Either<int, string>.Create(100);
             var expected = "Fail";
             var result = input.WhereNot(i => i > 10, () => expected);
 
@@ -278,9 +278,9 @@ namespace Bearded.Monads.Tests
             // without
 
             var someName = "Wadler";
-            EitherSuccessOrError<string, int> either = someName;
+            Either<string, int> either = someName;
 
-            Func<string, EitherSuccessOrError<string, int>> f;
+            Func<string, Either<string, int>> f;
             f = s => s.ToUpper();
 
             var viaOption = either.SelectMany(f);
@@ -297,9 +297,9 @@ namespace Bearded.Monads.Tests
             // the result should be equal to the option we started with
 
             var someName = "Wadler";
-            EitherSuccessOrError<string, int> option = someName;
+            Either<string, int> option = someName;
 
-            var viaOption = option.SelectMany(EitherSuccessOrError<string, int>.Create);
+            var viaOption = option.SelectMany(Either<string, int>.Create);
 
             Assert.Equal(option, viaOption);
         }
@@ -310,10 +310,10 @@ namespace Bearded.Monads.Tests
             // Order of application of functions must associate
 
             var someName = "Wadler";
-            EitherSuccessOrError<string, int> option = someName;
+            Either<string, int> option = someName;
 
-            Func<string, EitherSuccessOrError<string, int>> f;
-            Func<string, EitherSuccessOrError<string, int>> g;
+            Func<string, Either<string, int>> f;
+            Func<string, Either<string, int>> g;
 
             f = s => s.ToUpper();
             g = s => s.ToLower();

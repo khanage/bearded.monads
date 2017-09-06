@@ -52,7 +52,7 @@ interface Foldable<A> {
 - an option is foldable (one either "appends" the ~A~ to the default value, or returns the default value).
 - task is also foldable!
 
-** Applicative 1/2
+** Applicative
 
 This is a step up from Functor, and needs two things:
 #+BEGIN_SRC csharp
@@ -65,25 +65,19 @@ interface Applicative<A> : Functor<A> {
 #+END_SRC
 
 This seems a little weird, but one should imagine that the ~B~ can be another ~Func<C,D>~, so these ops can be chained.
-
-** Applicative 2/2
-
-This lets us chain together effects but where we don't care about the previous values.
-
-- For an option, we will only apply if everything has a value.
-- For a list, we will do a cross product. 
 #+BEGIN_SRC csharp
 // given an extension:
 Applicative<B> Apply(this Applicative<Func<A,B>> f, Applicative<A> a);
 
+Func<Int,Int> CurriedPlus(Int x) => y => x + y;
+
 new[]{ 2, 3, 4
      , 3, 4, 5
-     , 4, 5, 6} = Pure(Plus)
+     , 4, 5, 6} 
+ == Pure(CurriedPlus)
   .Apply(Pure(new []{1,2,3}))
   .Apply(Pure(new []{1,2,3}));
 #+END_SRC
-- For a task, we wait for all tasks to complete (but run them concurrently).
-
 ** Monad
 
 What if we want to have our function have some effect?

@@ -11,3 +11,6 @@ before_script:
  - dotnet pack /p:PackageVersion=$MAJOR.$MINOR.$TRAVIS_BUILD_NUMBER -o ../ ./Bearded.Monads/Bearded.Monads.csproj
 script:
  - dotnet nuget push -s https://www.nuget.org/api/v2/package -k $API_KEY ./Bearded.Monads.$MAJOR.$MINOR.$TRAVIS_BUILD_NUMBER.nupkg
+branches:
+  only:
+  - master 

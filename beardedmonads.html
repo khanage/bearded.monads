@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Functional programming and Bearded.Monads</title>
+<meta name="author" content="(Khan Thompson)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/moon.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Functional programming and Bearded.Monads</h1><h2 class="author">Khan Thompson</h2><p class="date">Created: 2017-09-06 Wed 12:32</p>
+</section>
+
+<section>
+<section id="slide-orgd1079c2">
+<h2 id="orgd1079c2">Functional programming</h2>
+<ul>
+<li>Programming without changing anything</li>
+<li>Math is function programming is math</li>
+
+</ul>
+
+</section>
+<section id="slide-orgcdfb332">
+<h3 id="orgcdfb332">Why not just mutate, it's easy?</h3>
+<ul>
+<li>Multi threading</li>
+<li>Equational reasoning</li>
+
+</ul>
+
+</section>
+<section id="slide-orgbff12b3">
+<h3 id="orgbff12b3">Why not just use the functional approach?</h3>
+<ul>
+<li>It's not what we were taught</li>
+<li>It can be awkward</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org9b61ee8">
+<h2 id="org9b61ee8">Some classes</h2>
+<ul>
+<li>There are some typeclasses (think interfaces) which have unreasonable effectiveness.</li>
+<li>They have weird names, so I'll explain them as best I can</li>
+
+</ul>
+
+</section>
+<section id="slide-org0a822f8">
+<h3 id="org0a822f8">Functor</h3>
+<p>
+A container for values, e.g. has a type parameter
+It defines an operation that lets one change the type in the context of the container.
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">We can change the type of the functor from `A` to `B`.</span>
+<span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Functor</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+  <span style="color: #ce537a; font-weight: bold;">Functor</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Select</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;(</span><span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #2d9574;">&lt;</span>A,B<span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">f</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>a list is a functor (it contains values)</li>
+<li>a task is a functor (it has a value that will be available in time)</li>
+<li>an option is a functor (it may or may not have a value)</li>
+
+</ul>
+
+</section>
+<section id="slide-orgd1da91c">
+<h3 id="orgd1da91c">Foldable</h3>
+<p>
+Something we can reduce to another value, with a function combining each value in the container.
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Foldable</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+   <span style="color: #ce537a; font-weight: bold;">B</span> <span style="color: #bc6ec5; font-weight: bold;">Aggregate</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">B</span><span style="color: #bc6ec5;">&gt;(</span><span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #2d9574;">&lt;</span>A,<span style="color: #ce537a; font-weight: bold;">B</span>,<span style="color: #ce537a; font-weight: bold;">B</span><span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">reduce</span>, <span style="color: #ce537a; font-weight: bold;">B</span> <span style="color: #7590db;">initialValue</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>a list is foldable (this is called <code>Aggregate</code> in linq).</li>
+<li>an option is foldable (one either "appends" the <code>A</code> to the default value, or returns the default value).</li>
+<li>task is also foldable!</li>
+
+</ul>
+
+</section>
+<section id="slide-org4648ce9">
+<h3 id="org4648ce9">Applicative 1/2</h3>
+<p>
+This is a step up from Functor, and needs two things:
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> : <span style="color: #ce537a; font-weight: bold;">Functor</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Put a value into the applicative</span>
+   <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Pure</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">A</span> <span style="color: #7590db;">value</span><span style="color: #bc6ec5;">)</span>; 
+   <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Chain functions together</span>
+   <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Apply</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #2d9574;">&lt;</span><span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #67b11d;">&lt;</span><span style="color: #ce537a; font-weight: bold;">A</span>,B<span style="color: #67b11d;">&gt;</span><span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">liftedFunc</span>, <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #2d9574;">&lt;</span><span style="color: #ce537a; font-weight: bold;">A</span><span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">val</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<p>
+This seems a little weird, but one should imagine that the <code>B</code> can be another <code>Func&lt;C,D&gt;</code>, so these ops can be chained.
+</p>
+
+</section>
+<section id="slide-org4516d3d">
+<h3 id="org4516d3d">Applicative 2/2</h3>
+<p>
+This lets us chain together effects but where we don't care about the previous values.
+</p>
+
+<ul>
+<li>For an option, we will only apply if everything has a value</li>
+<li>For a list, we will do a cross product</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">given an extension:</span>
+<span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>B<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Apply</span><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">this</span> <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #2d9574;">&lt;</span>A,B<span style="color: #2d9574;">&gt;</span><span style="color: #bc6ec5;">&gt;</span> f, <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #7590db;">a</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #4f97d7; font-weight: bold;">new</span><span style="color: #4f97d7;">[]{</span> <span style="color: #a45bad;">2</span>, <span style="color: #a45bad;">3</span>, <span style="color: #a45bad;">4</span>
+     , <span style="color: #a45bad;">3</span>, <span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">5</span>
+     , <span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">5</span>, <span style="color: #a45bad;">6</span><span style="color: #4f97d7;">}</span> = Pure<span style="color: #4f97d7;">(</span>Plus<span style="color: #4f97d7;">)</span>
+  .Apply<span style="color: #4f97d7;">(</span>Pure<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #2d9574;">[]{</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span><span style="color: #2d9574;">}</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .Apply<span style="color: #4f97d7;">(</span>Pure<span style="color: #bc6ec5;">(</span><span style="color: #4f97d7; font-weight: bold;">new</span> <span style="color: #2d9574;">[]{</span><span style="color: #a45bad;">1</span>,<span style="color: #a45bad;">2</span>,<span style="color: #a45bad;">3</span><span style="color: #2d9574;">}</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+<ul>
+<li>For a task, we wait for all tasks to complete (but run them concurrently)</li>
+
+</ul>
+
+</section>
+<section id="slide-org938f836">
+<h3 id="org938f836">Monad</h3>
+<p>
+What if we want to have our function have some effect?
+We need something slightly more powerfull
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Monad</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> : <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+   <span style="color: #ce537a; font-weight: bold;">Monad</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Bind</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;(</span><span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #2d9574;">&lt;</span>A,<span style="color: #ce537a; font-weight: bold;">Monad</span><span style="color: #67b11d;">&lt;</span>B<span style="color: #67b11d;">&gt;</span><span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">thingToMap</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<p>
+Why?
+</p>
+<ul>
+<li>A list we might want to do a nested foreach, e.g. foreach element, return a new list</li>
+<li>An option we might want to chain failure together, e.g. if there was a value, find the next thing that might also have a value.</li>
+<li>A task we will want to continue with the previous value and chain tasks together. This is waaay better than callbacks!</li>
+
+</ul>
+
+</section>
+<section id="slide-org33a4982">
+<h3 id="org33a4982">Traversable</h3>
+<p>
+The highest order - imagine we want to sequence some effect through something we can fold!
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Traversable</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> : <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+   <span style="color: #ce537a; font-weight: bold;">Traversable</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">IEnumerable</span><span style="color: #2d9574;">&lt;</span>B<span style="color: #2d9574;">&gt;</span><span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">Traverse</span><span style="color: #bc6ec5;">&lt;</span>B<span style="color: #bc6ec5;">&gt;(</span><span style="color: #ce537a; font-weight: bold;">IEnumerable</span><span style="color: #2d9574;">&lt;</span>A<span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">items</span>, <span style="color: #ce537a; font-weight: bold;">Func</span><span style="color: #2d9574;">&lt;</span>A,<span style="color: #ce537a; font-weight: bold;">Traversable</span><span style="color: #67b11d;">&lt;</span>B<span style="color: #67b11d;">&gt;</span><span style="color: #2d9574;">&gt;</span> <span style="color: #7590db;">callback</span><span style="color: #bc6ec5;">)</span>;
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<p>
+Imagine this takes a sequence of elements, applies to callback to them, then stitches them all together.
+</p>
+
+<ul>
+<li>You might have a list of ids that you want to load from the db, and if you don't find them all, you want to return nothing.</li>
+<li>You might have a list of ids that you need to load from an external service, you can use traverse to make the tasks run concurrently.</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgaf9f958">
+<h2 id="orgaf9f958">Types in bearded.monads</h2>
+<ul>
+<li>Only some of the types are defined (when they are needed)</li>
+<li>Some of it has been renamed to fit my personal aesthetic.</li>
+<li>It behaves "lawfully".</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc5e5a54">
+<h2 id="orgc5e5a54">Option&lt;A&gt;</h2>
+<ul>
+<li>This is the most immediately obvious type.</li>
+<li>It's null safe (i.e. no value you have in <code>Option</code> will be null).</li>
+<li>Implements Functor, Applicative, Monad and Traverse.</li>
+<li>It has a suite of ergonomics implemented.</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">None</span> : <span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5;">{}</span>
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Some</span> : <span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5;">{</span>
+     <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">A</span> <span style="color: #7590db;">val</span>;
+  <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<ul>
+<li>If you 100% need a null to be carried in this type, use <code>OptionUsafe</code>.</li>
+
+</ul>
+
+</section>
+<section id="slide-orgf8ba258">
+<h3 id="orgf8ba258">Functor</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">AsOption is an extension method, and will return None.</span>
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">string</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUsername</span> = <span style="color: #2d9574;">"My thing"</span>.AsOption<span style="color: #4f97d7;">()</span>;
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">int</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">lengthOfUsername</span> = possibleUsername
+  .Select<span style="color: #4f97d7;">(</span>name =&gt; name.Length<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org4a6097f">
+<h3 id="org4a6097f">Applicative</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = LoadUserFromDb<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleAction</span> = 
+  LoadActionDetailsFromExternalService<span style="color: #4f97d7;">(</span>anotherParam<span style="color: #4f97d7;">)</span>;
+
+Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">also, using static Bearded.Monads.Syntax;</span>
+  .Optionally<span style="color: #4f97d7;">(</span>possibleUser<span style="color: #4f97d7;">)</span>
+  .And<span style="color: #4f97d7;">(</span>possibleAction<span style="color: #4f97d7;">)</span>
+  .Then<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span>, <span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #bc6ec5;">)</span> =&gt; DumpToDb<span style="color: #bc6ec5;">(</span>user, action<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org0d3d9f6">
+<h3 id="org0d3d9f6">Monad</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = LoadUserFromDb<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">LoadActionFromDb</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> possibleUser.<span style="color: #bc6ec5; font-weight: bold;">SelectMany</span><span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #bc6ec5;">)</span>
+  =&gt; LoadActionFromDb<span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">user</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">.. or</span>
+
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>SomethingElse<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">query</span> =
+  <span style="color: #4f97d7; font-weight: bold;">from</span> user <span style="color: #4f97d7; font-weight: bold;">in</span> LoadUserFromDb<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>
+  <span style="color: #4f97d7; font-weight: bold;">from</span> action <span style="color: #4f97d7; font-weight: bold;">in</span> LoadActionFromDb<span style="color: #4f97d7;">(</span>user<span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">depends on the previous value</span>
+  <span style="color: #4f97d7; font-weight: bold;">select</span> DoSomethingElse<span style="color: #4f97d7;">(</span>user, action<span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+</section>
+<section id="slide-orgd6867a8">
+<h3 id="orgd6867a8">Traverse</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allMyUsers</span> = LoadUserHistory<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>Result<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">GetFinalResultFrom</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Has a value IFF all calls to GetFinalResultFrom return a value</span>
+<span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #bc6ec5;">&lt;</span>Result<span style="color: #bc6ec5;">&gt;</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allResultsWhenDone</span> = allMyUsers
+  .Traverse<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #bc6ec5;">)</span> =&gt; GetFinalResultFrom<span style="color: #bc6ec5;">(</span>action<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org5957f4d">
+<h2 id="org5957f4d">Try&lt;A&gt;</h2>
+<ul>
+<li>Exception handling.</li>
+<li>Like <code>Option</code> but it has a failure value, an exception.</li>
+<li>Implements Functor, Monad, Traverse.</li>
+<li>Join all your potential failures into one that will short circuit.</li>
+<li>If you need something with a error value other than exception, use <code>Either</code></li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Error</span> : <span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">Exception</span> <span style="color: #7590db;">val</span>;
+  <span style="color: #bc6ec5;">}</span>
+  <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Success</span> : <span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #bc6ec5;">&lt;</span>A<span style="color: #bc6ec5;">&gt;</span> <span style="color: #bc6ec5;">{</span>
+    <span style="color: #4f97d7; font-weight: bold;">private</span> <span style="color: #ce537a; font-weight: bold;">A</span> <span style="color: #7590db;">val</span>;
+  <span style="color: #bc6ec5;">}</span>
+<span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+</section>
+<section id="slide-orgbf936a0">
+<h3 id="orgbf936a0">Functor</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = dbConnectionFactory
+  .SafeCallback<span style="color: #4f97d7;">(</span>factory =&gt; factory.OpenConnection<span style="color: #bc6ec5;">()</span><span style="color: #4f97d7;">)</span>
+  .Select<span style="color: #4f97d7;">(</span>connection =&gt; connection.LoadUser<span style="color: #bc6ec5;">(</span>someIdParam<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org4f2e5c6">
+<h3 id="org4f2e5c6">Why no applicative?</h3>
+<ul>
+<li>Applicative runs "all at once"</li>
+<li>Which exception should we pick?</li>
+<li>This is a different type (which I have implemented yet ;))</li>
+
+</ul>
+
+</section>
+<section id="slide-org39ce01e">
+<h3 id="org39ce01e">Monad</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = ...;
+<span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">LoadAction</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">finalResult</span> = possibleUser
+  .SelectMany<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #bc6ec5;">)</span> =&gt; LoadAction<span style="color: #bc6ec5;">(</span>user<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>Result<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">query</span> =
+  <span style="color: #4f97d7; font-weight: bold;">from</span> user <span style="color: #4f97d7; font-weight: bold;">in</span> possibleUser
+  <span style="color: #4f97d7; font-weight: bold;">from</span> action <span style="color: #4f97d7; font-weight: bold;">in</span> LoadAction<span style="color: #4f97d7;">(</span>user<span style="color: #4f97d7;">)</span>
+  <span style="color: #4f97d7; font-weight: bold;">select</span> SomeResultFrom<span style="color: #4f97d7;">(</span>user, action<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org6ea0f9f">
+<h3 id="org6ea0f9f">Traverse</h3>
+<ul>
+<li>This cheats a little and uses the Monad instead of the applicative.</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allMyUsers</span> = LoadUserHistory<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>Result<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">GetFinalResultFrom</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Has a value IFF no calls threw an exception</span>
+<span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #bc6ec5;">&lt;</span>Result<span style="color: #bc6ec5;">&gt;</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allResultsWhenDone</span> = allMyUsers
+  .Traverse<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #bc6ec5;">)</span> =&gt; GetFinalResultFrom<span style="color: #bc6ec5;">(</span>action<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org0ef4f54">
+<h2 id="org0ef4f54">Task&lt;A&gt;</h2>
+<ul>
+<li>Task also fits nicely into all this</li>
+<li>Implements Functor, Applicative, Monad and Traverse</li>
+<li>Much nicely than chaining, although it's similar to <code>await</code> etc.</li>
+
+</ul>
+
+</section>
+<section id="slide-org414f82d">
+<h3 id="org414f82d">Functor</h3>
+<ul>
+<li>This instance exists for completeness.</li>
+<li>It may or may not be nicer to use than just await</li>
+<li>Whichever is the most intention revealing!</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>UserName<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">eventualUser</span> = LoadUser<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>
+  .Select<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #bc6ec5;">)</span> =&gt; user.Name<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">compares:</span>
+
+<span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span> = <span style="color: #4f97d7; font-weight: bold;">await</span> LoadUser<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+<span style="color: #4f97d7; font-weight: bold;">return</span> user.Name;
+</pre>
+</div>
+
+</section>
+<section id="slide-org0399006">
+<h3 id="org0399006">Applicative</h3>
+<p>
+Super awesome!
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">using</span> <span style="color: #4f97d7; font-weight: bold;">static</span> Bearded.Monads.Syntax;
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">other things</span>
+
+Asynquence<span style="color: #4f97d7;">(</span>LoadUserAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .And<span style="color: #4f97d7;">(</span>LoadActionAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .And<span style="color: #4f97d7;">(</span>LoadAnotherAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  .Then<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span>, <span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span>, <span style="color: #ce537a; font-weight: bold;">Another</span> <span style="color: #7590db;">another</span><span style="color: #bc6ec5;">)</span> 
+    =&gt; DoTheThing<span style="color: #bc6ec5;">(</span>user, action, another<span style="color: #bc6ec5;">)</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Compare</span>
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">User</span><span style="color: #bc6ec5;">&gt;</span> <span style="color: #7590db;">userTask</span> = LoadUserAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">Action</span><span style="color: #bc6ec5;">&gt;</span> <span style="color: #7590db;">actionTask</span> = LoadActionAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span>;
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #bc6ec5;">&lt;</span><span style="color: #ce537a; font-weight: bold;">Another</span><span style="color: #bc6ec5;">&gt;</span> <span style="color: #7590db;">anotherTask</span> = LoadAnotherAsync<span style="color: #bc6ec5;">(</span>..<span style="color: #bc6ec5;">)</span>;
+
+Task.WaitAll<span style="color: #bc6ec5;">(</span>userTask, actionTask, anotherTask<span style="color: #bc6ec5;">)</span>; 
+DoTheThing<span style="color: #bc6ec5;">(</span>userTask.Result, actionTask.Result, anotherTask.Result<span style="color: #bc6ec5;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org5fbbfe6">
+<h3 id="org5fbbfe6">Monad</h3>
+<p>
+Once again, compare with await syntax to get the clearest.
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = ...;
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">LoadAction</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">finalResult</span> = possibleUser
+  .SelectMany<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span><span style="color: #bc6ec5;">)</span> =&gt; LoadAction<span style="color: #bc6ec5;">(</span>user<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>Result<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">query</span> =
+  <span style="color: #4f97d7; font-weight: bold;">from</span> user <span style="color: #4f97d7; font-weight: bold;">in</span> possibleUser
+  <span style="color: #4f97d7; font-weight: bold;">from</span> action <span style="color: #4f97d7; font-weight: bold;">in</span> LoadAction<span style="color: #4f97d7;">(</span>user<span style="color: #4f97d7;">)</span>
+  <span style="color: #4f97d7; font-weight: bold;">select</span> SomeResultFrom<span style="color: #4f97d7;">(</span>user, action<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Compare</span>
+<span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">user</span> = <span style="color: #4f97d7; font-weight: bold;">await</span> possibleUser;
+<span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span> = <span style="color: #4f97d7; font-weight: bold;">await</span> LoadAction<span style="color: #4f97d7;">(</span>user<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Result</span> <span style="color: #7590db;">anotherResult</span> = <span style="color: #4f97d7; font-weight: bold;">await</span> SomeResultFrom<span style="color: #4f97d7;">(</span>user, action<span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+
+</section>
+<section id="slide-org4c38519">
+<h3 id="org4c38519">Traverse</h3>
+<div class="org-src-container">
+
+<pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allMyUsers</span> = LoadUserHistory<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
+
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span>Result<span style="color: #4f97d7;">&gt;</span> <span style="color: #bc6ec5; font-weight: bold;">GetFinalResultFrom</span><span style="color: #4f97d7;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #4f97d7;">)</span> =&gt; ...;
+
+<span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">Has a value when all tasks finish</span>
+<span style="color: #ce537a; font-weight: bold;">Task</span><span style="color: #4f97d7;">&lt;</span><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #bc6ec5;">&lt;</span>Result<span style="color: #bc6ec5;">&gt;</span><span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allResultsWhenDone</span> = allMyUsers
+  .Traverse<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">Action</span> <span style="color: #7590db;">action</span><span style="color: #bc6ec5;">)</span> =&gt; GetFinalResultFrom<span style="color: #bc6ec5;">(</span>action<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>;
+</pre>
+</div>
+</section>
+</section>
+</div>
+</div>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>

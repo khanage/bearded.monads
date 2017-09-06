@@ -1,0 +1,386 @@
+#+TITLE: Functional programming and Bearded.Monads
+#+AUTHOR: Khan Thompson
+#+EMAIL: khanage@gmail.com
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+OPTIONS: num:nil toc:nil time:nil
+
+* Functional programming
+
+- Programming without changing anything.
+- Math is function programming is math.
+
+** Why not just mutate, it's easy?
+
+- Multi threading.
+- Equational reasoning.
+
+** Why not just use the functional approach?
+
+- It's not what we were taught.
+- It can be awkward.
+
+* Some classes
+
+- There are some typeclasses (think interfaces) which have unreasonable effectiveness.
+- They have weird names, so I'll explain them as best I can.
+
+** Functor
+
+A container for values, e.g. has a type parameter.
+It defines an operation that lets one change the type in the context of the container.
+#+BEGIN_SRC csharp
+// We can change the type of the functor from `A` to `B`.
+interface Functor<A> {
+  Functor<B> Select<B>(Func<A,B> f);
+}
+#+END_SRC
+
+- a list is a functor (it contains values).
+- a task is a functor (it has a value that will be available in time).
+- an option is a functor (it may or may not have a value).
+
+** Foldable
+
+Something we can reduce to another value, with a function combining each value in the container.
+#+BEGIN_SRC csharp
+interface Foldable<A> {
+   B Aggregate<B>(Func<A,B,B> reduce, B initialValue);
+}
+#+END_SRC
+
+- a list is foldable (this is called ~Aggregate~ in linq).
+- an option is foldable (one either "appends" the ~A~ to the default value, or returns the default value).
+- task is also foldable!
+
+** Applicative 1/2
+
+This is a step up from Functor, and needs two things:
+#+BEGIN_SRC csharp
+interface Applicative<A> : Functor<A> {
+   // Put a value into the applicative
+   Applicative<A> Pure(A value); 
+   // Chain functions together
+   Applicative<B> Apply(Applicative<Func<A,B>> liftedFunc, Applicative<A> val);
+}
+#+END_SRC
+
+This seems a little weird, but one should imagine that the ~B~ can be another ~Func<C,D>~, so these ops can be chained.
+
+** Applicative 2/2
+
+This lets us chain together effects but where we don't care about the previous values.
+
+- For an option, we will only apply if everything has a value.
+- For a list, we will do a cross product. 
+#+BEGIN_SRC csharp
+// given an extension:
+Applicative<B> Apply(this Applicative<Func<A,B>> f, Applicative<A> a);
+
+new[]{ 2, 3, 4
+     , 3, 4, 5
+     , 4, 5, 6} = Pure(Plus)
+  .Apply(Pure(new []{1,2,3}))
+  .Apply(Pure(new []{1,2,3}));
+#+END_SRC
+- For a task, we wait for all tasks to complete (but run them concurrently).
+
+** Monad
+
+What if we want to have our function have some effect?
+We need something slightly more powerfull
+
+#+BEGIN_SRC csharp
+interface Monad<A> : Applicative<A> {
+   Monad<B> Bind<B>(Func<A,Monad<B>> thingToMap);
+}
+#+END_SRC
+
+Why?
+- A list we might want to do a nested foreach, e.g. foreach element, return a new list.
+- An option we might want to chain failure together, e.g. if there was a value, find the next thing that might also have a value.
+- A task we will want to continue with the previous value and chain tasks together. This is waaay better than callbacks!
+
+** Traversable
+
+The highest order - imagine we want to sequence some effect through something we can fold!
+
+#+BEGIN_SRC csharp
+interface Traversable<A> : Applicative<A> {
+   Traversable<IEnumerable<B>> Traverse<B>(IEnumerable<A> items, Func<A,Traversable<B>> callback);
+}
+#+END_SRC
+
+Imagine this takes a sequence of elements, applies to callback to them, then stitches them all together.
+
+- You might have a list of ids that you want to load from the db, and if you don't find them all, you want to return nothing.
+- You might have a list of ids that you need to load from an external service, you can use traverse to make the tasks run concurrently.
+
+** Finally
+
+- Functor maps a function over a container.
+- Applicative applies functions over a container.
+- Monad applies a function to a value in a container, where that function returns something in the container.
+- Traverse applies a function to each element in a collections, and sequences the container around the results.
+
+* Types in bearded.monads
+
+- Only some of the types are defined (when they are needed).
+- Some of it has been renamed to fit my personal aesthetic.
+- It behaves "lawfully".
+
+* Option<A>
+
+- This is the most immediately obvious type.
+- It's null safe (i.e. no value you have in ~Option~ will be null).
+- Implements Functor, Applicative, Monad and Traverse.
+- It has a suite of ergonomics implemented.
+
+#+BEGIN_SRC csharp
+class Option<A> {
+  private class None : Option<A> {}
+  private class Some : Option<A> {
+     private A val;
+  }
+}
+#+END_SRC
+
+- If you 100% need a null to be carried in this type, use ~OptionUsafe~.
+
+** Functor
+
+#+BEGIN_SRC csharp
+// AsOption is an extension method, and will return None.
+Option<string> possibleUsername = "My thing".AsOption();
+Option<int> lengthOfUsername = possibleUsername
+  .Select(name => name.Length);
+#+END_SRC
+
+** Applicative
+
+#+BEGIN_SRC csharp
+Option<User> possibleUser = LoadUserFromDb(someIdParam);
+Option<Action> possibleAction = 
+  LoadActionDetailsFromExternalService(anotherParam);
+
+Bearded.Monads.Syntax // also, using static Bearded.Monads.Syntax;
+  .Optionally(possibleUser)
+  .And(possibleAction)
+  .Then((User user, Action action) => DumpToDb(user, action));
+#+END_SRC
+
+** Monad
+
+#+BEGIN_SRC csharp
+Option<User> possibleUser = LoadUserFromDb(someIdParam);
+
+Option<Action> LoadActionFromDb(User user) => ...;
+
+Option<Action> possibleUser.SelectMany((User user)
+  => LoadActionFromDb(user));
+
+// .. or
+
+Option<SomethingElse> query =
+  from user in LoadUserFromDb(someIdParam)
+  from action in LoadActionFromDb(user) // depends on the previous value
+  select DoSomethingElse(user, action)
+#+END_SRC
+
+** Traverse
+
+#+BEGIN_SRC csharp
+List<Action> allMyUsers = LoadUserHistory(someIdParam);
+
+Option<Result> GetFinalResultFrom(Action action) => ...;
+
+// Has a value IFF all calls to GetFinalResultFrom return a value
+Option<List<Result>> allResultsWhenDone = allMyUsers
+  .Traverse((Action action) => GetFinalResultFrom(action));
+#+END_SRC
+
+* Try<A>
+
+- Exception handling.
+- Like ~Option~ but it has a failure value, an exception.
+- Implements Functor, Monad, Traverse.
+- Join all your potential failures into one that will short circuit.
+- If you need something with a error value other than exception, use ~Either~
+
+#+BEGIN_SRC csharp
+class Try<A> {
+  private class Error : Try<A> {
+    private Exception val;
+  }
+  private class Success : Try<A> {
+    private A val;
+  }
+}
+#+END_SRC
+
+** Functor
+
+#+BEGIN_SRC csharp
+Try<User> possibleUser = dbConnectionFactory
+  .SafeCallback(factory => factory.OpenConnection())
+  .Select(connection => connection.LoadUser(someIdParam));
+#+END_SRC
+
+** Why no applicative?
+
+- Applicative runs "all at once".
+- Which exception should we pick?
+- This is a different type (which I have implemented yet ;)).
+
+** Monad
+
+#+BEGIN_SRC csharp
+Try<User> possibleUser = ...;
+Try<Action> LoadAction(User user) => ...;
+
+Try<Action> finalResult = possibleUser
+  .SelectMany((User user) => LoadAction(user));
+
+Try<Result> query =
+  from user in possibleUser
+  from action in LoadAction(user)
+  select SomeResultFrom(user, action);
+#+END_SRC
+
+** Traverse
+
+- This cheats a little and uses the Monad instead of the applicative.
+
+#+BEGIN_SRC csharp
+List<Action> allMyUsers = LoadUserHistory(someIdParam);
+
+Try<Result> GetFinalResultFrom(Action action) => ...;
+
+// Has a value IFF no calls threw an exception
+Try<List<Result>> allResultsWhenDone = allMyUsers
+  .Traverse((Action action) => GetFinalResultFrom(action));
+#+END_SRC
+
+* Task<A>
+
+- Task also fits nicely into all this
+- Implements Functor, Applicative, Monad and Traverse
+- Much nicely than chaining, although it's similar to ~await~ etc.
+
+** Functor
+
+- This instance exists for completeness.
+- It may or may not be nicer to use than just await
+- Whichever is the most intention revealing!
+
+#+BEGIN_SRC csharp
+Task<UserName> eventualUser = LoadUser(someIdParam)
+  .Select((User user) => user.Name);
+
+// compares:
+
+User user = await LoadUser(someIdParam);
+return user.Name;
+#+END_SRC
+
+** Applicative
+
+Super awesome!
+#+BEGIN_SRC csharp
+using static Bearded.Monads.Syntax;
+// other things
+
+Asynquence(LoadUserAsync(..))
+  .And(LoadActionAsync(..))
+  .And(LoadAnotherAsync(..))
+  .Then((User user, Action action, Another another) 
+    => DoTheThing(user, action, another);
+
+// Compare
+Task<User> userTask = LoadUserAsync(..);
+Task<Action> actionTask = LoadActionAsync(..);
+Task<Another> anotherTask = LoadAnotherAsync(..);
+
+Task.WaitAll(userTask, actionTask, anotherTask); 
+DoTheThing(userTask.Result, actionTask.Result, anotherTask.Result);
+#+END_SRC
+
+** Monad
+
+Once again, compare with await syntax to get the clearest.
+
+#+BEGIN_SRC csharp
+Task<User> possibleUser = ...;
+Task<Action> LoadAction(User user) => ...;
+
+Task<Action> finalResult = possibleUser
+  .SelectMany((User user) => LoadAction(user));
+
+Task<Result> query =
+  from user in possibleUser
+  from action in LoadAction(user)
+  select SomeResultFrom(user, action);
+
+// Compare
+User user = await possibleUser;
+Action action = await LoadAction(user);
+
+Result anotherResult = await SomeResultFrom(user, action);
+#+END_SRC
+
+** Traverse
+
+#+BEGIN_SRC csharp
+List<Action> allMyUsers = LoadUserHistory(someIdParam);
+
+Task<Result> GetFinalResultFrom(Action action) => ...;
+
+// Has a value when all tasks finish
+Task<List<Result>> allResultsWhenDone = allMyUsers
+  .Traverse((Action action) => GetFinalResultFrom(action));
+#+END_SRC
+
+* General notes
+
+A common question is: how do I get a value "out" of the container.
+
+For the most part, the answer is: you don't.
+
+The ideal way to deal with this library is to think in terms of the abstractions I've presented.
+
+Use composition instead of destructing :).
+* Just doing something to the value
+
+So, you want to do something to the value? 
+
+#+BEGIN_SRC csharp
+Option<Thing> something;
+BetterThing DoTheThingToTheValue(Thing thing);
+
+something.Select(DoTheThingToTheValue);
+#+END_SRC
+
+Now, you want to do something that also is in the same container?
+
+#+BEGIN_SRC csharp
+Option<Thing> something;
+Option<BetterThing> DoSomeThingMoreEffectfulWithTheValue(Thing thing);
+
+something.SelectMany(DoSomeThingMoreEffectfulWithTheValue);
+#+END_SRC
+
+* I've got lots of things?
+
+#+BEGIN_SRC csharp
+List<Thing> things;
+Option<BetterThing> MakeTheBetterThing(Thing thing);
+
+things.Traverse(MakeTheBetterThing);
+
+// bonus points:
+
+Try<List<Id>> ids;
+Try<Thing> GetTheThing(Id id);
+
+Try<List<Thing>> things = ids
+  .SelectMany(safeIds => safeIds.Traverse(GetTheThing));
+#+END_SRC

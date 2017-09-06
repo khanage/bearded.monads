@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,6 +21,21 @@ namespace Bearded.Monads.Tests
             );
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async void Traverse_Happy()
+        {
+            var expected = 20;
+
+            var incoming = Enumerable.Range(1, 2);
+            var result = await incoming
+                .Traverse(i => Task.FromResult(i * 20))
+                .Select(x => x.ToList());
+
+            Assert.Equal(2, result.Count);
+            Assert.Equal(20, result[0]);
+            Assert.Equal(40, result[1]);
         }
 
         [Fact]

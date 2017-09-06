@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using static Bearded.Monads.Syntax;
 
 namespace Bearded.Monads
 {
@@ -27,5 +30,12 @@ namespace Bearded.Monads
         {
             return task.ContinueWith(t => callback(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
+
+        public static Task<IEnumerable<B>> Traverse<A, B>(this IEnumerable<A> elems, Func<A, Task<B>> callback)
+            => Task.WhenAll(elems.Select(e => callback(e).Run()))
+                .Select(x => (IEnumerable<B>)x);
+
+        public static Task<IEnumerable<A>> Sequence<A>(this IEnumerable<Task<A>> tasks)
+            => tasks.Traverse(id);
     }
 }

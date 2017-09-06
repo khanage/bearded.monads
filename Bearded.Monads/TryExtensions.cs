@@ -112,7 +112,7 @@ namespace Bearded.Monads
 
         public static Try<A> WhereNot<A>(this Try<A> incoming,
             Predicate<A> notPredicate, Func<Exception> errorCallback)
-            => incoming.WhereNot(x => !notPredicate(x), errorCallback);
+            => incoming.Where(x => !notPredicate(x), errorCallback);
 
         public static Try<A> WhereNot<A>(this Try<A> incoming,
             Predicate<A> notPredicate, Func<String> errorCallback)

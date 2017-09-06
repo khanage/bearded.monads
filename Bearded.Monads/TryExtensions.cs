@@ -68,6 +68,21 @@ namespace Bearded.Monads
         public static Try<A> AsTry<A>(this Option<A> option, Func<Exception> errorCallback)
             => option.Select(Try<A>.Create).Else(() => Try<A>.Create(errorCallback()));
 
+        public static Try<A> AsTry<A>(this Option<A> option, Func<string> errorCallback)
+            => option.AsTry(() => new Exception(errorCallback()));
+
+        public static Try<A> AsTry<A>(this Option<A> option, string message)
+            => option.AsTry(() => message);
+
+        public static Try<A> AsTry<A>(this Try<Option<A>> option, Func<Exception> errorCallback)
+            => option.SelectMany(o => o.Select(Try<A>.Create).Else(() => Try<A>.Create(errorCallback())));
+
+        public static Try<A> AsTry<A>(this Try<Option<A>> option, Func<string> errorCallback)
+            => option.AsTry(() => new Exception(errorCallback()));
+
+        public static Try<A> AsTry<A>(this Try<Option<A>> option, string message)
+            => option.AsTry(() => message);
+
         public static Try<A> AsTry<A, Error>(this Either<A, Error> either, Func<Error, Exception> errorTransform)
             => either.Unify(Try<A>.Create, e => Try<A>.Create(errorTransform(e)));
 
@@ -86,6 +101,26 @@ namespace Bearded.Monads
             if (predicate(either.AsSuccess().Value)) return either;
             return errorCallback();
         }
+
+        public static Try<A> Where<A>(this Try<A> either,
+            Predicate<A> predicate, Func<String> errorCallback)
+            => either.Where(predicate, () => new Exception(errorCallback()));
+
+        public static Try<A> Where<A>(this Try<A> either,
+            Predicate<A> predicate, String message)
+            => either.Where(predicate, () => message);
+
+        public static Try<A> WhereNot<A>(this Try<A> incoming,
+            Predicate<A> notPredicate, Func<Exception> errorCallback)
+            => incoming.WhereNot(x => !notPredicate(x), errorCallback);
+
+        public static Try<A> WhereNot<A>(this Try<A> incoming,
+            Predicate<A> notPredicate, Func<String> errorCallback)
+            => incoming.WhereNot(notPredicate, () => new Exception(errorCallback()));
+
+        public static Try<A> WhereNot<A>(this Try<A> incoming,
+            Predicate<A> notPredicate, String message)
+            => incoming.WhereNot(notPredicate, () => message);
 
         public static Result Else<A, Result>(this Try<A> either,
             Func<A, Result> happy,
@@ -172,8 +207,5 @@ namespace Bearded.Monads
             this IEnumerable<Try<A>> incoming)
             => incoming.Traverse(id);
 
-        public static Try<A> WhereNot<A>(this Try<A> incoming,
-            Predicate<A> notPredicate, Func<Exception> errorCallback)
-            => incoming.Where(x => !notPredicate(x), errorCallback);
     }
 }

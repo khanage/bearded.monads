@@ -28,6 +28,9 @@ namespace Bearded.Monads
             public A func<B>(B _) => val();
         }
 
+        public static OptionalApplicative<A> Optionally<A>(Option<A> option)
+            => new OptionalApplicative<A>(option);
+
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>
             new AsyncApplicative<A>(callback);
 

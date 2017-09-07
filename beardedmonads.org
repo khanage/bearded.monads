@@ -223,7 +223,7 @@ Try<User> possibleUser = dbConnectionFactory
 
 - Applicative runs "all at once".
 - Which exception should we pick?
-- This is a different type (which I have implemented yet ;)).
+- This is more like a validation type which collects a list of errors.
 
 ** Monad
 
@@ -333,6 +333,62 @@ Task<List<Result>> allResultsWhenDone = allMyUsers
   .Traverse((Action action) => GetFinalResultFrom(action));
 #+END_SRC
 
+* Requires<Something,A>
+
+- This is the inversion of dependency injection.
+- Imagine you have a library that requires a logger, this can be quite awkward to pass in as a static field set somewhere in a class, or it needs some manner of service location.
+This is fraught with danger, as this is the type of thing that throws runtime errors.
+Instead, waht we want to do is to have these exceptions present at ~compile time~
+
+** Examples first
+
+#+BEGIN_SRC csharp
+class Reader<T,A> {
+  Func<T,A> backingField;
+
+  public A Run(T value) => backingField(value);
+}
+#+END_SRC
+
+If you imagine we have some db library:
+#+BEGIN_SRC csharp
+public Requires<ILogger,User> LoadUserFromDb(UserId id)
+  => Requires<ILogger>.In(logger => {
+       logger.LogInfo("Getting me a user here yo");
+       var sw = StopWatch.StartNew();
+       
+       // The repo also needs a logger, 
+       // for debugging connection issues, etc.
+       var result = new Repo(logger).LoadUser(id);
+       
+       sw.Stop();
+       logger.LogInfo(
+          "Damn, this request took {0:0M}ms",
+          sw.ElapsedMilliseconds
+       );
+
+       return result;
+    });
+#+END_SRC
+
+** In practice
+
+#+BEGIN_SRC csharp
+class MyController : Controller {
+   public IActionResult GetById(int id, bool shouldDebug) {
+     var currentRequestLogger = new CurrentRequestLogger(logger);
+     var loggerToUse = shouldDebug ? currentRequestLogger : logger;
+
+     var user = previousSlide.LoadUserFromDb.Run(loggerToUser);
+
+     if(shouldDebug) {
+       return Ok(currentRequestLogger.JsonResponseWithLogs(user));
+     }
+     return Ok(user);
+   }
+}
+#+END_SRC
+
 * General notes
 
 A common question is: how do I get a value "out" of the container.
@@ -372,9 +428,32 @@ things.Traverse(MakeTheBetterThing);
 
 // bonus points:
 
-Try<List<Id>> ids;
+Try<List<Id>> hopefullyIds;
 Try<Thing> GetTheThing(Id id);
 
-Try<List<Thing>> things = ids
-  .SelectMany(safeIds => safeIds.Traverse(GetTheThing));
+Try<List<Thing>> things = hopefullyIds
+  .SelectMany(ids => ids.Traverse(GetTheThing));
+#+END_SRC
+
+* But I really need to get stuff out
+
+#+BEGIN_SRC csharp
+User actualUser;
+
+Option<User> maybeUser;
+Try<User> possibleUser;
+Task<User> futureUser;
+Requires<ILogger,User> loggedUser;
+
+actualUser = maybeUser.Else(() => /* create a user */);
+
+actualUser = possibleUser.ElseThrow();
+actualUser = possibleUser.Unify(
+   (User user) => ...,
+   (Exception e) => ...
+); // Creates a third type, eg. web response
+
+actualUser = futureUser.Result;
+
+actualUser = loggedUser.Run(loggerFactory.Create());
 #+END_SRC

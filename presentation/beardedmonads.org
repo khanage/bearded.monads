@@ -2,11 +2,12 @@
 #+AUTHOR: Khan Thompson
 #+EMAIL: khanage@gmail.com
 #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+REVEAL_THEME: blood
 #+REVEAL_EXTRA_CSS: ./additional.css
 #+OPTIONS: num:nil toc:nil time:nil
 
 * Functional programming
-
+  
 - Programming without changing anything.
 - Math is function programming is math.
 
@@ -27,7 +28,7 @@
 
 ** Functor 1/2
 
-file:./imgs/Functor.png 
+   [[file:./imgs/Functor.png]]
 A container for values, e.g. has a type parameter. It defines an operation that lets one change the type in the context of the container.
 
 ** Functor 2/2
@@ -43,7 +44,7 @@ interface Functor<A> {
 - an option is a functor (it may or may not have a value).
 
 ** Foldable 1/2
-
+   
 [[file:./imgs/Foldable.png]]
 Something we can reduce to another value, with a function combining each value in the collection.
 
@@ -155,7 +156,7 @@ class Option<A> {
 }
 #+END_SRC
 
-- If you 100% need a null to be carried in this type, use ~OptionUsafe~.
+- If you 100% need a null to be carried in this type, use ~OptionUnsafe~.
 
 ** Functor
 

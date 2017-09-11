@@ -2,6 +2,7 @@
 #+AUTHOR: Khan Thompson
 #+EMAIL: khanage@gmail.com
 #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+REVEAL_EXTRA_CSS: ./additional.css
 #+OPTIONS: num:nil toc:nil time:nil
 
 * Functional programming
@@ -24,10 +25,12 @@
 - There are some typeclasses (think interfaces) which have unreasonable effectiveness.
 - They have weird names, so I'll explain them as best I can.
 
-** Functor
+** Functor 1/2
 
-A container for values, e.g. has a type parameter.
-It defines an operation that lets one change the type in the context of the container.
+file:./imgs/Functor.png 
+A container for values, e.g. has a type parameter. It defines an operation that lets one change the type in the context of the container.
+
+** Functor 2/2
 #+BEGIN_SRC csharp
 // We can change the type of the functor from `A` to `B`.
 interface Functor<A> {
@@ -39,9 +42,13 @@ interface Functor<A> {
 - a task is a functor (it has a value that will be available in time).
 - an option is a functor (it may or may not have a value).
 
-** Foldable
+** Foldable 1/2
 
-Something we can reduce to another value, with a function combining each value in the container.
+[[file:./imgs/Foldable.png]]
+Something we can reduce to another value, with a function combining each value in the collection.
+
+** Foldable 2/2
+
 #+BEGIN_SRC csharp
 interface Foldable<A> {
    B Aggregate<B>(Func<A,B,B> reduce, B initialValue);
@@ -52,8 +59,12 @@ interface Foldable<A> {
 - an option is foldable (one either "appends" the ~A~ to the default value, or returns the default value).
 - task is also foldable!
 
-** Applicative
+** Applicative 1/2
 
+[[file:./imgs/Applicative.png]]
+We talk about having a function inside of context, but also..
+
+** Applicative 2/2
 This is a step up from Functor, and needs two things:
 #+BEGIN_SRC csharp
 interface Applicative<A> : Functor<A> {
@@ -78,10 +89,13 @@ new[]{ 2, 3, 4
   .Apply(Pure(new []{1,2,3}))
   .Apply(Pure(new []{1,2,3}));
 #+END_SRC
-** Monad
+** Monad 1/2
 
+[[file:./imgs/Monad.png]]
 What if we want to have our function have some effect?
 We need something slightly more powerfull
+
+** Monad 2/2
 
 #+BEGIN_SRC csharp
 interface Monad<A> : Applicative<A> {
@@ -94,10 +108,13 @@ Why?
 - An option we might want to chain failure together, e.g. if there was a value, find the next thing that might also have a value.
 - A task we will want to continue with the previous value and chain tasks together. This is waaay better than callbacks!
 
-** Traversable
+** Traversable 1/2
 
+[[file:./imgs/Traversable.png]]
 The highest order - imagine we want to sequence some effect through something we can fold!
 
+** Traversable 2/2
+ 
 #+BEGIN_SRC csharp
 interface Traversable<A> : Applicative<A> {
    Traversable<IEnumerable<B>> Traverse<B>(IEnumerable<A> items, Func<A,Traversable<B>> callback);
@@ -324,12 +341,12 @@ Result anotherResult = await SomeResultFrom(user, action);
 ** Traverse
 
 #+BEGIN_SRC csharp
-List<Action> allMyUsers = LoadUserHistory(someIdParam);
+List<Action> allMyActions = LoadActionsFor(userIdParam);
 
 Task<Result> GetFinalResultFrom(Action action) => ...;
 
 // Has a value when all tasks finish
-Task<List<Result>> allResultsWhenDone = allMyUsers
+Task<List<Result>> allResultsWhenDone = allMyActions
   .Traverse((Action action) => GetFinalResultFrom(action));
 #+END_SRC
 
@@ -451,7 +468,7 @@ actualUser = possibleUser.ElseThrow();
 actualUser = possibleUser.Unify(
    (User user) => ...,
    (Exception e) => ...
-); // Creates a third type, eg. web response
+);
 
 actualUser = futureUser.Result;
 

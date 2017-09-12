@@ -333,12 +333,6 @@ namespace Bearded.Monads
         }
 
         [DebuggerStepThrough]
-        public static Option<IEnumerable<B>> Traverse<A, B>(this IEnumerable<A> enumerable, Func<A, Option<B>> callback)
-        {
-            return enumerable.Select(callback).AllOrNone();
-        }
-
-        [DebuggerStepThrough]
         public static Option<IEnumerable<A>> Sequence<A>(this IEnumerable<Option<A>> incoming)
             => incoming.Traverse(id);
     }

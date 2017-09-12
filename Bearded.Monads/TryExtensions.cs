@@ -65,6 +65,8 @@ namespace Bearded.Monads
         public static Either<A, Error> AsEither<A, Error>(this Try<A> either, Func<Exception, Error> errorMap)
             => either.Else(Either<A, Error>.Create, ex => errorMap(ex));
 
+        public static Try<A> AsTryValue<A>(this A thing) => Try<A>.Create(thing);
+
         public static Try<A> AsTry<A>(this Option<A> option, Func<Exception> errorCallback)
             => option.Select(Try<A>.Create).Else(() => Try<A>.Create(errorCallback()));
 
@@ -189,19 +191,6 @@ namespace Bearded.Monads
         public static Try<A> Flatten<A>(
             this Try<Try<A>> ee)
             => ee.SelectMany(id);
-
-        public static Try<IEnumerable<B>> Traverse<A, B>(
-            this IEnumerable<A> enumerable,
-            Func<A, Try<B>> callback)
-        {
-            var mapped = enumerable.Select(callback).ToList();
-
-            var maybeError = mapped.FirstOrNone(x => x.IsError).Select(x => x.AsError().Value);
-
-            return !maybeError.IsSome
-                ? Try<IEnumerable<B>>.Create(mapped.Select(x => x.AsSuccess().Value))
-                : maybeError.ForceValue();
-        }
 
         public static Try<IEnumerable<A>> Sequence<A>(
             this IEnumerable<Try<A>> incoming)

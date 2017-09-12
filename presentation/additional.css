@@ -1,0 +1,16 @@
+.reveal code {
+    background-color: #23241f;
+    display: inline-block;
+    border-radius: 7px;
+}
+.reveal h1 {
+    font-size: 2.7em;
+}
+.reveal h2 {
+    font-size: 2.0em;
+}
+.reveal img {
+    width: 400px;
+    height: 560px;
+    float: right;
+}

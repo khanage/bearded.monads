@@ -356,7 +356,7 @@ Task<List<Result>> allResultsWhenDone = allMyActions
 - This is the inversion of dependency injection.
 - Imagine you have a library that requires a logger, this can be quite awkward to pass in as a static field set somewhere in a class, or it needs some manner of service location.
 This is fraught with danger, as this is the type of thing that throws runtime errors.
-Instead, waht we want to do is to have these exceptions present at ~compile time~
+Instead, what we want to do is to have these exceptions present at ~compile time~
 
 ** Examples first
 

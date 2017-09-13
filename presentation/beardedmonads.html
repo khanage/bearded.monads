@@ -27,12 +27,12 @@
 <body>
 <div class="reveal">
 <div class="slides">
-<section id="sec-title-slide"><h1 class="title">Functional programming and Bearded.Monads</h1><h2 class="author">Khan Thompson</h2><p class="date">Created: 2017-09-11 Mon 14:19</p>
+<section id="sec-title-slide"><h1 class="title">Functional programming and Bearded.Monads</h1><h2 class="author">Khan Thompson</h2><p class="date">Created: 2017-09-13 Wed 11:00</p>
 </section>
 
 <section>
-<section id="slide-org7089710">
-<h2 id="org7089710">Functional programming</h2>
+<section id="slide-orga01eea9">
+<h2 id="orga01eea9">Functional programming</h2>
 <ul>
 <li>Programming without changing anything.</li>
 <li>Math is function programming is math.</li>
@@ -40,8 +40,8 @@
 </ul>
 
 </section>
-<section id="slide-org20cc1a7">
-<h3 id="org20cc1a7">Why not just mutate, it's easy?</h3>
+<section id="slide-org81110b4">
+<h3 id="org81110b4">Why not just mutate, it's easy?</h3>
 <ul>
 <li>Multi threading.</li>
 <li>Equational reasoning.</li>
@@ -49,8 +49,8 @@
 </ul>
 
 </section>
-<section id="slide-orgc1dc129">
-<h3 id="orgc1dc129">Why not just use the functional approach?</h3>
+<section id="slide-org488b8de">
+<h3 id="org488b8de">Why not just use the functional approach?</h3>
 <ul>
 <li>It's not what we were taught.</li>
 <li>It can be awkward.</li>
@@ -60,8 +60,8 @@
 </section>
 </section>
 <section>
-<section id="slide-org43d36a5">
-<h2 id="org43d36a5">Some classes</h2>
+<section id="slide-org0167178">
+<h2 id="org0167178">Some classes</h2>
 <ul>
 <li>There are some typeclasses (think interfaces) which have unreasonable effectiveness.</li>
 <li>They have weird names, so I'll explain them as best I can.</li>
@@ -69,16 +69,16 @@
 </ul>
 
 </section>
-<section id="slide-orgf788862">
-<h3 id="orgf788862">Functor 1/2</h3>
+<section id="slide-org559a367">
+<h3 id="org559a367">Functor 1/2</h3>
 <p>
    <img src="./imgs/Functor.png" alt="Functor.png" />
 A container for values, e.g. has a type parameter. It defines an operation that lets one change the type in the context of the container.
 </p>
 
 </section>
-<section id="slide-org4679190">
-<h3 id="org4679190">Functor 2/2</h3>
+<section id="slide-orgead0f79">
+<h3 id="orgead0f79">Functor 2/2</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">We can change the type of the functor from `A` to `B`.</span>
@@ -96,16 +96,16 @@ A container for values, e.g. has a type parameter. It defines an operation that 
 </ul>
 
 </section>
-<section id="slide-org21ca0bf">
-<h3 id="org21ca0bf">Foldable 1/2</h3>
+<section id="slide-orgf1d4a47">
+<h3 id="orgf1d4a47">Foldable 1/2</h3>
 <p>
 <img src="./imgs/Foldable.png" alt="Foldable.png" />
 Something we can reduce to another value, with a function combining each value in the collection.
 </p>
 
 </section>
-<section id="slide-orgeed1866">
-<h3 id="orgeed1866">Foldable 2/2</h3>
+<section id="slide-org44197f8">
+<h3 id="org44197f8">Foldable 2/2</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Foldable</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
@@ -122,16 +122,16 @@ Something we can reduce to another value, with a function combining each value i
 </ul>
 
 </section>
-<section id="slide-org1bb55cb">
-<h3 id="org1bb55cb">Applicative 1/2</h3>
+<section id="slide-org50062c6">
+<h3 id="org50062c6">Applicative 1/2</h3>
 <p>
 <img src="./imgs/Applicative.png" alt="Applicative.png" />
 We talk about having a function inside of context, but also..
 </p>
 
 </section>
-<section id="slide-org276d239">
-<h3 id="org276d239">Applicative 2/2</h3>
+<section id="slide-org31bce9e">
+<h3 id="org31bce9e">Applicative 2/2</h3>
 <p>
 This is a step up from Functor, and needs two things:
 </p>
@@ -165,8 +165,8 @@ This seems a little weird, but one should imagine that the <code>B</code> can be
 </pre>
 </div>
 </section>
-<section id="slide-orgf0e8705">
-<h3 id="orgf0e8705">Monad 1/2</h3>
+<section id="slide-orgdb1bb5f">
+<h3 id="orgdb1bb5f">Monad 1/2</h3>
 <p>
 <img src="./imgs/Monad.png" alt="Monad.png" />
 What if we want to have our function have some effect?
@@ -174,8 +174,8 @@ We need something slightly more powerfull
 </p>
 
 </section>
-<section id="slide-org7c92340">
-<h3 id="org7c92340">Monad 2/2</h3>
+<section id="slide-orgdae6aa8">
+<h3 id="orgdae6aa8">Monad 2/2</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Monad</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> : <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
@@ -195,16 +195,16 @@ Why?
 </ul>
 
 </section>
-<section id="slide-orgaf1f4b9">
-<h3 id="orgaf1f4b9">Traversable 1/2</h3>
+<section id="slide-org759bbbc">
+<h3 id="org759bbbc">Traversable 1/2</h3>
 <p>
 <img src="./imgs/Traversable.png" alt="Traversable.png" />
 The highest order - imagine we want to sequence some effect through something we can fold!
 </p>
 
 </section>
-<section id="slide-orgab0d60b">
-<h3 id="orgab0d60b">Traversable 2/2</h3>
+<section id="slide-org83c63db">
+<h3 id="org83c63db">Traversable 2/2</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">interface</span> <span style="color: #ce537a; font-weight: bold;">Traversable</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> : <span style="color: #ce537a; font-weight: bold;">Applicative</span><span style="color: #4f97d7;">&lt;</span>A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
@@ -224,8 +224,8 @@ Imagine this takes a sequence of elements, applies to callback to them, then sti
 </ul>
 
 </section>
-<section id="slide-orga6f0dc5">
-<h3 id="orga6f0dc5">Finally</h3>
+<section id="slide-org1e39f47">
+<h3 id="org1e39f47">Finally</h3>
 <ul>
 <li>Functor maps a function over a container.</li>
 <li>Applicative applies functions over a container.</li>
@@ -237,8 +237,8 @@ Imagine this takes a sequence of elements, applies to callback to them, then sti
 </section>
 </section>
 <section>
-<section id="slide-orgf5c39c3">
-<h2 id="orgf5c39c3">Types in bearded.monads</h2>
+<section id="slide-org0fea0e0">
+<h2 id="org0fea0e0">Types in bearded.monads</h2>
 <ul>
 <li>Only some of the types are defined (when they are needed).</li>
 <li>Some of it has been renamed to fit my personal aesthetic.</li>
@@ -249,8 +249,8 @@ Imagine this takes a sequence of elements, applies to callback to them, then sti
 </section>
 </section>
 <section>
-<section id="slide-org202a039">
-<h2 id="org202a039">Option&lt;A&gt;</h2>
+<section id="slide-org893bd80">
+<h2 id="org893bd80">Option&lt;A&gt;</h2>
 <ul>
 <li>This is the most immediately obvious type.</li>
 <li>It's null safe (i.e. no value you have in <code>Option</code> will be null).</li>
@@ -276,8 +276,8 @@ Imagine this takes a sequence of elements, applies to callback to them, then sti
 </ul>
 
 </section>
-<section id="slide-org7835c75">
-<h3 id="org7835c75">Functor</h3>
+<section id="slide-orged73b5a">
+<h3 id="orged73b5a">Functor</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #2aa1ae; background-color: #292e34;">// </span><span style="color: #2aa1ae; background-color: #292e34;">AsOption is an extension method, and will return None.</span>
@@ -288,8 +288,8 @@ Imagine this takes a sequence of elements, applies to callback to them, then sti
 </div>
 
 </section>
-<section id="slide-org1f49c2a">
-<h3 id="org1f49c2a">Applicative</h3>
+<section id="slide-org932f14b">
+<h3 id="org932f14b">Applicative</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = LoadUserFromDb<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
@@ -304,8 +304,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-orgd81a5c7">
-<h3 id="orgd81a5c7">Monad</h3>
+<section id="slide-org653fdce">
+<h3 id="org653fdce">Monad</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Option</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = LoadUserFromDb<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
@@ -325,8 +325,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-org83e851d">
-<h3 id="org83e851d">Traverse</h3>
+<section id="slide-orgc6ca2d8">
+<h3 id="orgc6ca2d8">Traverse</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allMyUsers</span> = LoadUserHistory<span style="color: #4f97d7;">(</span>someIdParam<span style="color: #4f97d7;">)</span>;
@@ -342,8 +342,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </section>
 </section>
 <section>
-<section id="slide-org431e1dd">
-<h2 id="org431e1dd">Try&lt;A&gt;</h2>
+<section id="slide-org5d3efd2">
+<h2 id="org5d3efd2">Try&lt;A&gt;</h2>
 <ul>
 <li>Exception handling.</li>
 <li>Like <code>Option</code> but it has a failure value, an exception.</li>
@@ -367,8 +367,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-org66bf5f6">
-<h3 id="org66bf5f6">Functor</h3>
+<section id="slide-org94ecafb">
+<h3 id="org94ecafb">Functor</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = dbConnectionFactory
@@ -378,8 +378,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-org0347bc3">
-<h3 id="org0347bc3">Why no applicative?</h3>
+<section id="slide-orgaf7a3c1">
+<h3 id="orgaf7a3c1">Why no applicative?</h3>
 <ul>
 <li>Applicative runs "all at once".</li>
 <li>Which exception should we pick?</li>
@@ -388,8 +388,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </ul>
 
 </section>
-<section id="slide-org3035ebd">
-<h3 id="org3035ebd">Monad</h3>
+<section id="slide-orgf3b8b1d">
+<h3 id="orgf3b8b1d">Monad</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">Try</span><span style="color: #4f97d7;">&lt;</span>User<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">possibleUser</span> = ...;
@@ -406,8 +406,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-org13a7a7d">
-<h3 id="org13a7a7d">Traverse</h3>
+<section id="slide-org8ab5a5e">
+<h3 id="org8ab5a5e">Traverse</h3>
 <ul>
 <li>This cheats a little and uses the Monad instead of the applicative.</li>
 
@@ -428,8 +428,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </section>
 </section>
 <section>
-<section id="slide-org2923ae7">
-<h2 id="org2923ae7">Task&lt;A&gt;</h2>
+<section id="slide-orgea609d6">
+<h2 id="orgea609d6">Task&lt;A&gt;</h2>
 <ul>
 <li>Task also fits nicely into all this</li>
 <li>Implements Functor, Applicative, Monad and Traverse</li>
@@ -438,8 +438,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </ul>
 
 </section>
-<section id="slide-org4dc0f10">
-<h3 id="org4dc0f10">Functor</h3>
+<section id="slide-orgecbd827">
+<h3 id="orgecbd827">Functor</h3>
 <ul>
 <li>This instance exists for completeness.</li>
 <li>It may or may not be nicer to use than just await</li>
@@ -460,8 +460,8 @@ Bearded.Monads.Syntax <span style="color: #2aa1ae; background-color: #292e34;">/
 </div>
 
 </section>
-<section id="slide-org545953e">
-<h3 id="org545953e">Applicative</h3>
+<section id="slide-org9bc6a4c">
+<h3 id="org9bc6a4c">Applicative</h3>
 <p>
 Super awesome!
 </p>
@@ -487,8 +487,8 @@ DoTheThing<span style="color: #bc6ec5;">(</span>userTask.Result, actionTask.Resu
 </div>
 
 </section>
-<section id="slide-org9869c60">
-<h3 id="org9869c60">Monad</h3>
+<section id="slide-orgc0d96fc">
+<h3 id="orgc0d96fc">Monad</h3>
 <p>
 Once again, compare with await syntax to get the clearest.
 </p>
@@ -515,8 +515,8 @@ Once again, compare with await syntax to get the clearest.
 </div>
 
 </section>
-<section id="slide-org7f2d160">
-<h3 id="org7f2d160">Traverse</h3>
+<section id="slide-orgfea4183">
+<h3 id="orgfea4183">Traverse</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Action<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">allMyActions</span> = LoadActionsFor<span style="color: #4f97d7;">(</span>userIdParam<span style="color: #4f97d7;">)</span>;
@@ -532,8 +532,8 @@ Once again, compare with await syntax to get the clearest.
 </section>
 </section>
 <section>
-<section id="slide-org3891fbe">
-<h2 id="org3891fbe">Requires&lt;Something,A&gt;</h2>
+<section id="slide-org2c961e1">
+<h2 id="org2c961e1">Requires&lt;Something,A&gt;</h2>
 <ul>
 <li>This is the inversion of dependency injection.</li>
 <li>Imagine you have a library that requires a logger, this can be quite awkward to pass in as a static field set somewhere in a class, or it needs some manner of service location.</li>
@@ -541,12 +541,12 @@ Once again, compare with await syntax to get the clearest.
 </ul>
 <p>
 This is fraught with danger, as this is the type of thing that throws runtime errors.
-Instead, waht we want to do is to have these exceptions present at <code>compile time</code>
+Instead, what we want to do is to have these exceptions present at <code>compile time</code>
 </p>
 
 </section>
-<section id="slide-org0589882">
-<h3 id="org0589882">Examples first</h3>
+<section id="slide-orgc63a4af">
+<h3 id="orgc63a4af">Examples first</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">Reader</span><span style="color: #4f97d7;">&lt;</span>T,A<span style="color: #4f97d7;">&gt;</span> <span style="color: #4f97d7;">{</span>
@@ -583,8 +583,8 @@ If you imagine we have some db library:
 </div>
 
 </section>
-<section id="slide-org8ee83c6">
-<h3 id="org8ee83c6">In practice</h3>
+<section id="slide-org4089a1b">
+<h3 id="org4089a1b">In practice</h3>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #4f97d7; font-weight: bold;">class</span> <span style="color: #ce537a; font-weight: bold;">MyController</span> : <span style="color: #ce537a; font-weight: bold;">Controller</span> <span style="color: #4f97d7;">{</span>
@@ -606,8 +606,8 @@ If you imagine we have some db library:
 </section>
 </section>
 <section>
-<section id="slide-org0b8e8e9">
-<h2 id="org0b8e8e9">General notes</h2>
+<section id="slide-org36a632f">
+<h2 id="org36a632f">General notes</h2>
 <p>
 A common question is: how do I get a value "out" of the container.
 </p>
@@ -626,8 +626,8 @@ Use composition instead of destructing :).
 </section>
 </section>
 <section>
-<section id="slide-org08555e8">
-<h2 id="org08555e8">Just doing something to the value</h2>
+<section id="slide-org74231fb">
+<h2 id="org74231fb">Just doing something to the value</h2>
 <p>
 So, you want to do something to the value? 
 </p>
@@ -657,8 +657,8 @@ something.SelectMany<span style="color: #4f97d7;">(</span>DoSomeThingMoreEffectf
 </section>
 </section>
 <section>
-<section id="slide-org750b6a4">
-<h2 id="org750b6a4">I've got lots of things?</h2>
+<section id="slide-orgf8d69be">
+<h2 id="orgf8d69be">I've got lots of things?</h2>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">List</span><span style="color: #4f97d7;">&lt;</span>Thing<span style="color: #4f97d7;">&gt;</span> <span style="color: #7590db;">things</span>;
@@ -679,8 +679,8 @@ things.Traverse<span style="color: #4f97d7;">(</span>MakeTheBetterThing<span sty
 </section>
 </section>
 <section>
-<section id="slide-orgf0a83f1">
-<h2 id="orgf0a83f1">But I really need to get stuff out</h2>
+<section id="slide-org7816f80">
+<h2 id="org7816f80">But I really need to get stuff out</h2>
 <div class="org-src-container">
 
 <pre  class="src src-csharp"><span style="color: #ce537a; font-weight: bold;">User</span> <span style="color: #7590db;">actualUser</span>;

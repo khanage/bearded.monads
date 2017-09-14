@@ -65,7 +65,7 @@ namespace Bearded.Monads
         public static Either<A, Error> AsEither<A, Error>(this Try<A> either, Func<Exception, Error> errorMap)
             => either.Else(Either<A, Error>.Create, ex => errorMap(ex));
 
-        public static Try<A> AsTryValue<A>(this A thing) => Try<A>.Create(thing);
+        public static Try<A> AsTry<A>(this A thing) => Try<A>.Create(thing);
 
         public static Try<A> AsTry<A>(this Option<A> option, Func<Exception> errorCallback)
             => option.Select(Try<A>.Create).Else(() => Try<A>.Create(errorCallback()));

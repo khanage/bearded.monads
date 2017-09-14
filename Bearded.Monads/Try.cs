@@ -16,8 +16,8 @@ namespace Bearded.Monads
         public bool IsError => this is ExceptionContainer;
         public bool IsSuccess => this is TryContainer;
 
-        public TryContainer AsSuccess() => this as TryContainer;
-        public ExceptionContainer AsError() => this as ExceptionContainer;
+        internal TryContainer AsSuccess() => this as TryContainer;
+        internal ExceptionContainer AsError() => this as ExceptionContainer;
 
         public Try<Next> Map<Next>(Func<Success, Next> f) => MapImpl(f);
 
@@ -25,7 +25,7 @@ namespace Bearded.Monads
 
         public abstract void Do(Action<Success> successCallback, Action<Exception> errorCallback);
 
-        public class TryContainer : Try<Success>
+        internal class TryContainer : Try<Success>
         {
             public Success Value { get; }
             public TryContainer(Success success) => Value = success;
@@ -50,7 +50,7 @@ namespace Bearded.Monads
             }
         }
 
-        public class ExceptionContainer : Try<Success>
+        internal class ExceptionContainer : Try<Success>
         {
             public Exception Value { get; }
             public ExceptionContainer(Exception e) => Value = e;

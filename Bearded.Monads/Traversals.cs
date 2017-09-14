@@ -32,7 +32,7 @@ namespace Bearded.Monads
             var tryEnumerable = either.Select(callback);
 
             return tryEnumerable.IsSuccess
-                ? tryEnumerable.AsSuccess().Value.Select(x => x.AsTryValue())
+                ? tryEnumerable.AsSuccess().Value.Select(x => x.AsTry())
                 : new[] {Try<B>.Create(tryEnumerable.AsError().Value)};
         }
 

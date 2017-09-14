@@ -26,8 +26,6 @@ namespace Bearded.Monads.Tests
         [Fact]
         public async void Traverse_Happy()
         {
-            var expected = 20;
-
             var incoming = Enumerable.Range(1, 2);
             var result = await incoming
                 .Traverse(i => Task.FromResult(i * 20))

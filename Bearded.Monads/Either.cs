@@ -8,8 +8,8 @@ namespace Bearded.Monads
 
     public abstract class Either<Success, Error> : IEquatable<Either<Success, Error>>
     {
-        public ErrorContainer AsError => this as ErrorContainer;
-        public SuccessContainer AsSuccess => this as SuccessContainer;
+        internal ErrorContainer AsError => this as ErrorContainer;
+        internal SuccessContainer AsSuccess => this as SuccessContainer;
 
         public bool IsError => this is ErrorContainer;
         public bool IsSuccess => this is SuccessContainer;
@@ -75,7 +75,7 @@ namespace Bearded.Monads
             !Equals(left, right);
 
         #region Implementations
-        public class ErrorContainer : Either<Success, Error>
+        internal class ErrorContainer : Either<Success, Error>
         {
             public ErrorContainer(Error value)
             {
@@ -95,7 +95,7 @@ namespace Bearded.Monads
             }
         }
 
-        public class SuccessContainer : Either<Success, Error>
+        internal class SuccessContainer : Either<Success, Error>
         {
             public SuccessContainer(Success value)
             {

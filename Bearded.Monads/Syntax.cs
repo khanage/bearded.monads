@@ -52,5 +52,29 @@ namespace Bearded.Monads
         public static AsyncApplicative<A, B, C, D, E, F> Asynquence<A, B, C, D, E, F>(Task<A> callbackA,
             Task<B> callbackB, Task<C> callbackC, Task<D> callbackD, Task<E> callbackE, Task<F> callbackF) =>
             new AsyncApplicative<A, B, C, D, E, F>(callbackA, callbackB, callbackC, callbackD, callbackE, callbackF);
+
+        public static Try<A> Try<A>(Func<Try<A>> f)
+        {
+            try
+            {
+                return f();
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+        
+        public static Try<A> Try<A>(Func<A> f)
+        {
+            try
+            {
+                return f();
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
     }
 }

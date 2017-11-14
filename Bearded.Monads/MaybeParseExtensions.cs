@@ -54,6 +54,16 @@ namespace Bearded.Monads
             return Option<long>.None;
         }
 
+	    public static Option<double> MaybeDouble(this string value)
+	    {
+		    double val;
+
+		    if (double.TryParse(value, out val))
+			    return val;
+
+		    return Option<double>.None;
+	    }
+
         public static Option<Uri> MaybeUri(this string value, UriKind? uriKind)
         {
             var kindToUse = uriKind ?? UriKind.RelativeOrAbsolute;

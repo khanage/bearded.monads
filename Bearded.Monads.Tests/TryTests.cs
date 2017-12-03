@@ -245,6 +245,18 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
+        public void Sequence_NotOKNotExecutingAll()
+        {
+            var failAt = 10;
+            var input = Enumerable.Range(1, 100).Select(_ => IncrementCounter(failAt));
+
+            var result = input.Sequence();
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(failAt, ExecutionCount);
+        }
+
+        [Fact]
         public void WhereNot_Ok()
         {
             var expected = 10;
@@ -330,6 +342,25 @@ namespace Bearded.Monads.Tests
             var second = option.SelectMany(x => f(x).SelectMany(g));
 
             Assert.Equal(second, first);
+        }
+        #endregion
+
+        #region Supporting methods
+        private static int ExecutionCount = 0;
+
+        private Try<int> ResetCounter(){
+            ExecutionCount = 0;
+
+            return ExecutionCount;
+        }
+
+        private Try<int> IncrementCounter(int failAt){
+            ExecutionCount++;
+
+            if (ExecutionCount >= failAt)
+                return new Exception("Failed");
+
+            return ExecutionCount;    
         }
         #endregion
     }

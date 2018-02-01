@@ -3,7 +3,7 @@ Bearded.Monads
 
 [![build:passing](https://travis-ci.org/khanage/bearded.monads.svg?branch=master)](https://travis-ci.org/khanage/bearded.monads#)
 
-Monads monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
+Monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
 Currently provides Option and Either, as they are usefull for error checking, as well as task.
 

@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 1.0.1
+dotnet: 1.1.5
 dist: trusty
 solution: Bearded.Monads.sln
 install:

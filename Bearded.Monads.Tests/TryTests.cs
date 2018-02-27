@@ -266,6 +266,16 @@ namespace Bearded.Monads.Tests
             Assert.Equal(expected, result.AsError().Value);
         }
 
+        [Fact]
+        public void FlattenIEnumerableOfIEnumerable_OK()
+        {
+            var input = Enumerable.Range(1, 3).Select(i => Enumerable.Range(i * 10, 2)).AsTry();
+            var result = input.Flatten();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(new []{10,11,20,21,30,31}, result.Select(l => l).AsSuccess().Value.ToArray());
+        }
+
         #region Monad laws
         [Fact]
         public void LeftIdentity()

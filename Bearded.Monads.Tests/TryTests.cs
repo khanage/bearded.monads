@@ -267,7 +267,7 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
-        public void FlattenIEnumerableOfIEnumerable_OK()
+        public void FlattenTryIEnumerableOfIEnumerable_OK()
         {
             var input = Enumerable.Range(1, 3).Select(i => Enumerable.Range(i * 10, 2)).AsTry();
             var result = input.Flatten();

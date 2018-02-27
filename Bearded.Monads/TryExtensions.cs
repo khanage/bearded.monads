@@ -192,6 +192,10 @@ namespace Bearded.Monads
             this Try<Try<A>> ee)
             => ee.SelectMany(id);
 
+        public static Try<IEnumerable<A>> Flatten<A>(
+            this Try<IEnumerable<IEnumerable<A>>> incoming)
+            => incoming.Select(x => x.Flatten());
+
         public static Try<IEnumerable<A>> Sequence<A>(
             this IEnumerable<Try<A>> incoming)
             => incoming.Traverse(id);

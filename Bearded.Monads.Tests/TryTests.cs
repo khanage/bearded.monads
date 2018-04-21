@@ -248,12 +248,13 @@ namespace Bearded.Monads.Tests
         public void Sequence_NotOKNotExecutingAll()
         {
             int executionCount = 0;
+            var exceptionToTrigger = new Exception("Failed");
         
             Try<int> IncrementCounter(int fail){
                 executionCount++;
 
                 if (executionCount >= fail)
-                    return new Exception("Failed");
+                    return exceptionToTrigger;
 
                 return executionCount;    
             }
@@ -265,6 +266,7 @@ namespace Bearded.Monads.Tests
 
             Assert.False(result.IsSuccess);
             Assert.Equal(failAt, executionCount);
+            Assert.Equal(exceptionToTrigger, result.AsError().Value);
         }
 
         [Fact]

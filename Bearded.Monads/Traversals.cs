@@ -14,8 +14,18 @@ namespace Bearded.Monads
             this IEnumerable<A> enumerable,
             Func<A, Try<B>> callback)
         {
-            var mapped = enumerable.Select(callback).ToList();
+            IEnumerable<Try<B>> EnumerateCallback()
+            {
+                foreach(var enume in enumerable){
+                    var execution = callback(enume);
+                    yield return execution;
+                    if (execution.IsError){
+                        yield break;
+                    }
+                }
+            }        
 
+            var mapped = EnumerateCallback().ToList();
             var maybeError = mapped.FirstOrNone(x => x.IsError).Select(x => x.AsError().Value);
 
             return !maybeError.IsSome

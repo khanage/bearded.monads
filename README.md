@@ -30,7 +30,7 @@ public bool TryParseInt(string input, out int output)
 {
     output = default(int);
     int i;
-    if(int.TryParse(string, out i))
+    if(int.TryParse(input, out i))
     {
         output = i;
         return true;
@@ -43,7 +43,7 @@ public bool TryParseInt(string input, out int output)
 Can now be transformed into something a little more sane:
 
 ```c#
-public Option<int> TryParseInt(string input
+public Option<int> TryParseInt(string input)
 {
     var i = default(int);
     if(!int.TryParse(input, out i))

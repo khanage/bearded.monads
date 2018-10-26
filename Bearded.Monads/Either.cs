@@ -17,11 +17,17 @@ namespace Bearded.Monads
         [DebuggerStepThrough]
         public static Either<Success, Error> Create(Error value) =>
             new ErrorContainer(value);
-
+        [DebuggerStepThrough]
+        public static Either<Success, Error> CreateError(Error value) =>
+            new ErrorContainer(value);
+        
         [DebuggerStepThrough]
         public static Either<Success, Error> Create(Success value) =>
             new SuccessContainer(value);
-
+        [DebuggerStepThrough]
+        public static Either<Success, Error> CreateSuccess(Success value) =>
+            new SuccessContainer(value);        
+        
         #region Abstract methods
         [DebuggerStepThrough]
         public abstract Either<NextSuccess,Error> Map<NextSuccess>(Func<Success,NextSuccess> mapper);

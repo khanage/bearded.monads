@@ -5,7 +5,7 @@ Bearded.Monads
 
 Monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
-Currently provides Option and Either, as they are usefull for error checking, as well as task.
+Currently provides Option and Either, as they are useful for error checking, as well as task.
 
 Also provides applicative instances for Task and Maybe.
 
@@ -28,14 +28,12 @@ As an academic example, consider a trivial method that might have looked thusly 
 ```c#
 public bool TryParseInt(string input, out int output)
 {
-    output = default(int);
-    int i;
-    if(int.TryParse(input, out i))
+    if(int.TryParse(input, out int i))
     {
         output = i;
         return true;
     }
-
+    output = default
     return false;
 }
 ```
@@ -45,11 +43,12 @@ Can now be transformed into something a little more sane:
 ```c#
 public Option<int> TryParseInt(string input)
 {
-    var i = default(int);
-    if(!int.TryParse(input, out i))
-        return Option<int>.None;
-    // Note the implicit operator that converts the `A` to an `Option<A>`
-    return i;
+    if(int.TryParse(input, out int i))
+    {
+        // Note the implicit operator that converts the `A` to an `Option<A>`
+        return i;
+    }
+    return Option<int>.None;
 }
 ```
 
@@ -58,20 +57,17 @@ As a more realistic example, imagine loading something from a database:
 ```c#
 public MyEntity LoadEntityBy(int id)
 {
-    // Please excuse this code, it's been awhile since I've used these types.
-
-    using(var connection = _connectionPool.Open())
-    using(var command = connection.CreateCommand())
+    // Assume Dapper is being used...
+    using(var connection = new IDbConnection(_connectionString))
     {
-        command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
-        command.Parameters.Add("id", id);
-
-        var result = command.ExecuteReader();
-
-        if(result.Results == 0)
-            return null;
-
-        return _mapper.From(reader).To(new MyEntity());
+        string sql = "SELECT * FROM Entity WHERE Id = @Id";
+        var result = connection.Query<DbEntity>(sql, new { Id = id });
+        
+        if(result.Any())
+        {
+            return _mapper.From(result.First()).To(new MyEntity());
+        }
+        return null;
     }
 }
 ```
@@ -81,20 +77,17 @@ Becomes:
 ```c#
 public Option<MyEntity> LoadEntityBy(int id)
 {
-    // Please excuse this code, it's been awhile since I've used these types.
-
-    using(var connection = _connectionPool.Open())
-    using(var command = connection.CreateCommand())
+    // Assume Dapper is being used...
+    using(var connection = new IDbConnection(_connectionString))
     {
-        command.CommandText = "SELECT * FROM Entity WHERE id = {id}";
-        command.Parameters.Add("id", id);
-
-        var result = command.ExecuteReader();
-
-        if(result.Results == 0)
-            return Option<MyEntity>.None;
-
-        return _mapper.From(reader).To(new MyEntity());
+        string sql = "SELECT * FROM Entity WHERE Id = @Id";
+        var result = connection.Query<DbEntity>(sql, new { Id = id });
+        
+        if(result.Any())
+        {
+            return _mapper.From(result.First()).To(new MyEntity());
+        }
+        return Option<MyEntity>.None;
     }
 }
 ```
@@ -113,7 +106,7 @@ public void LoadEntity(string fromPossibleId)
 
 ## Either
 
-This has been renamed to `EitherSuccessOrFailure`, and takes it's "success" value as the first type parameter.
+This has been renamed from `EitherSuccessOrFailure`, and takes it's "success" value as the first type parameter.
 
 This was done as Either "short circuits" on a `Left` in haskell, but this seems a little unnatural from C#. Please raise an issue if you don't believe this is the case.
 
@@ -134,10 +127,10 @@ public Option<ResultFromTertiaryService> LoadFromAMultitudeOfServices(string val
 }
 ```
 
-This might fail at any point, so it's helpful to *tag* the `None` with some helpful context, e.g.
+This might fail at any point, so it's helpful to *tag* the `None` with some helpful context by using `AsEither` to convert from `Option<Success>` to `Either<Success, string>` e.g.
 
 ```c#
-public EitherSuccessOrFailure<ResultFromTertiaryService,string> LoadFromAMultitudeOfServices(string value)
+public Either<ResultFromTertiaryService,string> LoadFromAMultitudeOfServices(string value)
 {
     return from id in TryParseInt(value).AsEither("Failed to parse ({0}) into an id", value)
             from first in ExpensiveCallToAWebServiceThatMightFail(id).AsEither("Didn't find a value")

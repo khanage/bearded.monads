@@ -31,6 +31,9 @@ namespace Bearded.Monads
         public static OptionalApplicative<A> Optionally<A>(Option<A> option)
             => new OptionalApplicative<A>(option);
 
+        public static EitherApplicative<A,Error> EitherArg<A,Error>(Either<A,Error> either)
+            => new EitherApplicative<A,Error>(either);
+
         public static AsyncApplicative<A> Asynquence<A>(Task<A> callback) =>
             new AsyncApplicative<A>(callback);
 

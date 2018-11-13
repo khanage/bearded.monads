@@ -130,6 +130,15 @@ namespace Bearded.Monads
             return either.Else(message => { throw new Exception(message); });
         }
 
+        public static Either<A, NewError> MapError<A, Error, NewError>(this Either<A, Error> either, Func<Error, NewError> mapper)
+        {
+            if (either.IsError)
+            {
+                return mapper(either.AsError.Value);
+            }
+            return either.AsSuccess.Value;
+        }
+
         public static Either<A, Error> Flatten<A, Error>(
             this Either<Either<A, Error>, Error> ee)
             => ee.SelectMany(id);

@@ -747,6 +747,34 @@ namespace Bearded.Monads.Tests
             Assert.False(result.IsSome);
         }
 
+        enum TestEnum
+        {
+            One = 1,
+            Two = 2
+        }
+        
+        [Fact]
+        public void EnumFromInt_Ok()
+        {
+            var knownIndex = 1;
+            var expected = TestEnum.One;
+
+            var actual = knownIndex.MaybeEnum<TestEnum>();
+            
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void EnumFromInt_NotOk()
+        {
+            var knownBadIndex = 42;
+            var expected = Option<TestEnum>.None;
+
+            var actual = knownBadIndex.MaybeEnum<TestEnum>();
+            
+            Assert.Equal(expected, actual);
+        }
+
         #region Monad laws
         [Fact]
         public void LeftIdentity()

@@ -92,5 +92,14 @@ namespace Bearded.Monads
         {
             return value.MaybeEnum<A>(false);
         }
+
+        public static Option<A> MaybeEnum<A>(this int value)
+            where A : struct
+        {
+            if (Enum.IsDefined(typeof(A), value))
+                return (A)Enum.ToObject(typeof(A), value);
+            
+            return Option<A>.None;
+        }
     }
 }

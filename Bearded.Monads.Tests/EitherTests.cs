@@ -239,7 +239,8 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void Sequence_NotOK()
         {
-            var input = Enumerable.Range(1, 100).Select(Either<int, string>.Create).Append(Either<int,string>.Create("Failed"));
+            var input = Enumerable.Range(1, 100).Select(Either<int, string>.Create)
+                .Append(Either<int, string>.Create("Failed"));
 
             var result = input.Sequence();
 
@@ -269,6 +270,7 @@ namespace Bearded.Monads.Tests
         }
 
         #region Monad laws
+
         [Fact]
         public void LeftIdentity()
         {
@@ -323,6 +325,7 @@ namespace Bearded.Monads.Tests
 
             Assert.Equal(second, first);
         }
+
         #endregion
     }
 }

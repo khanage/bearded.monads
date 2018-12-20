@@ -5,7 +5,7 @@ namespace Bearded.Monads
 {
     [Obsolete("EitherSuccessOrError has been renamed to Either")]
     public abstract class EitherSuccessOrError<Success, Error> {}
-
+    
     public abstract class Either<Success, Error> : IEquatable<Either<Success, Error>>
     {
         internal ErrorContainer AsError => this as ErrorContainer;

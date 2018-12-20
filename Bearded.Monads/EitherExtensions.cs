@@ -31,6 +31,9 @@ namespace Bearded.Monads
             return option.AsEither(string.Format(format, formatArgs));
         }
 
+        public static Either<Success, Error> AsEither<Success, Error>(this Success success) =>
+            Either<Success, Error>.CreateSuccess(success);
+
         public static Either<B, Error> SelectMany<A, B, Error>(
             this Either<A, Error> aOrError,
             Func<A, Either<B, Error>> mapper)

@@ -24,6 +24,7 @@ namespace Bearded.Monads
         protected abstract Try<Next> MapImpl<Next>(Func<Success, Next> f);
 
         public abstract void Do(Action<Success> successCallback, Action<Exception> errorCallback);
+        public abstract Try<Success> On(Action<Success> successCallback, Action<Exception> errorCallback);
 
         internal class TryContainer : Try<Success>
         {
@@ -48,6 +49,12 @@ namespace Bearded.Monads
             {
                 successCallback(Value);
             }
+
+            public override Try<Success> On(Action<Success> successCallback, Action<Exception> errorCallback)
+            {
+                successCallback(Value);
+                return this;
+            }
         }
 
         internal class ExceptionContainer : Try<Success>
@@ -61,6 +68,12 @@ namespace Bearded.Monads
             public override void Do(Action<Success> successCallback, Action<Exception> errorCallback)
             {
                 errorCallback(Value);
+            }
+
+            public override Try<Success> On(Action<Success> successCallback, Action<Exception> errorCallback)
+            {
+                errorCallback(Value);
+                return this;
             }
         }
 

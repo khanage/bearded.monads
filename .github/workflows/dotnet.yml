@@ -1,12 +1,15 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: Publish NuGet
+name: Publish Bearded.Monads
 
 on:
   push:
     branches:
     - main
+
+env:
+  BUILD_NUMBER: ${{ vars.MAJOR_VERSION }}.${{ vars.MINOR_VERSION }}.${{ github.run_number }}
 
 jobs:
   build:
@@ -14,8 +17,14 @@ jobs:
     timeout-minutes: 15
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release /p:Version=$BUILD_NUMBER
     - name: Test
       run: dotnet test --configuration Release --no-build
+    - name: Publish
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet pack /p:Version=$BUILD_NUMBER -c Release -o .
+        dotnet nuget push ./Bearded.Monads.$BUILD_NUMBER.nupkg -s https://api.nuget.org/v3/index.json -k $NUGET_API_KEY 

@@ -1,6 +1,8 @@
 Bearded.Monads
 ============
 
+[![Publish Bearded.Monads](https://github.com/khanage/bearded.monads/actions/workflows/dotnet.yml/badge.svg)](https://github.com/khanage/bearded.monads/actions/workflows/dotnet.yml)
+
 Monads for use in C#. These include implementations of `SelectMany` (aka. `bind`) so you can use C#s fluent linq syntax.
 
 Currently provides Option and Either, as they are useful for error checking, as well as task.

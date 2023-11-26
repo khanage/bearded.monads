@@ -31,6 +31,8 @@ namespace Bearded.Monads
 
         public abstract A Else(Func<A> callbackForNone);
 
+        public abstract A Else(A valueForNone);
+
         public abstract Option<CastTarget> Cast<CastTarget>() where CastTarget : A;
 
         public abstract bool Equals(A other);
@@ -89,6 +91,8 @@ namespace Bearded.Monads
 
             public override A Else(Func<A> callbackForNone) => force;
 
+            public override A Else(A valueForNone) => force;
+
             public override Option<CastTarget> Cast<CastTarget>()
             {
                 if (force is CastTarget)
@@ -132,6 +136,8 @@ namespace Bearded.Monads
             }
 
             public override A Else(Func<A> callbackForNone) => callbackForNone();
+
+            public override A Else(A valueForNone) => valueForNone;
 
             public override Option<CastTarget> Cast<CastTarget>()
             {

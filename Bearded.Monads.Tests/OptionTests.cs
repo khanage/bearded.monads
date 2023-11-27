@@ -139,7 +139,7 @@ namespace Bearded.Monads.Tests
         public void ElseWithSomeReturnsSome()
         {
             var option = Option.Return(42);
-            var def = option.Else(666);
+            var def = option.Else(() => 666);
 
             Assert.Equal(42, def);
         }
@@ -148,7 +148,7 @@ namespace Bearded.Monads.Tests
         public void ElseWithNoneReturnsElse()
         {
             var option = Option<int>.None;
-            var def = option.Else(666);
+            var def = option.Else(() => 666);
 
             Assert.Equal(666, def);
         }

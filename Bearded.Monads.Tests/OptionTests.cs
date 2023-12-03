@@ -154,6 +154,26 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
+        public void ElseValueWithSomeReturnsSome()
+        {
+            var option = Option.Return(42);
+
+            var def = option.Else(666);
+
+            Assert.Equal(42, def);
+        }
+
+        [Fact]
+        public void ElseValueWithNoneReturnsValue()
+        {
+            var option = Option<int>.None;
+
+            var def = option.Else(666);
+
+            Assert.Equal(666, def);
+        }
+
+        [Fact]
         public void SelectManyFlattensOption()
         {
             var optionOption = Option.Return(Option.Return(42));

@@ -10,8 +10,11 @@
     <Version>1.2.1</Version>
     <AssemblyVersion>1.2.1.0</AssemblyVersion>
     <FileVersion>1.2.1.0</FileVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../beard.jpg" Pack="true" PackagePath="/" />
+    <None Include="../README.md" Packe="true" PackagePath="/" />
   </ItemGroup>
 </Project>

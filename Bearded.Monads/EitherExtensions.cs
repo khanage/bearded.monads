@@ -142,6 +142,20 @@ namespace Bearded.Monads
             return either.AsSuccess.Value;
         }
 
+        public static E ElseError<A,E>(this Either<A,E> either, E error) {
+            if (either.IsSuccess)
+                return error;
+
+            return either.AsError.Value;
+        }
+
+        public static E ElseErrorOrThrow<A,E>(this Either<A,E> either) {
+            if (either.IsSuccess)
+                throw new ValueWasPresentWhenNotExpectedException(either.AsSuccess.Value);
+
+            return either.AsError.Value;
+        }
+
         public static Either<A, Error> Flatten<A, Error>(
             this Either<Either<A, Error>, Error> ee)
             => ee.SelectMany(id);
@@ -166,5 +180,14 @@ namespace Bearded.Monads
         public static Either<A, Error> WhereNot<A, Error>(this Either<A, Error> incoming,
             Predicate<A> notPredicate, Func<Error> errorCallback)
             => incoming.Where(x => !notPredicate(x), errorCallback);
+
+        [Serializable]
+        private class ValueWasPresentWhenNotExpectedException : Exception
+        {
+            public ValueWasPresentWhenNotExpectedException(object value) 
+                : base($"Expected an unsuccesful call, but found ${value}")
+            {
+            }
+        }
     }
 }

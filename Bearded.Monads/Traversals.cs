@@ -61,6 +61,7 @@ namespace Bearded.Monads
                 : Enumerable.Empty<Option<B>>();
         }
 
+        [DebuggerStepThrough]
         public static Task<Option<B>> Traverse<A, B>(this Option<A> option, Func<A, Task<B>> callback)
         {
             var thing = option.Select(callback);
@@ -68,6 +69,16 @@ namespace Bearded.Monads
             return thing.IsSome
                 ? thing.ForceValue().Select(x => x.AsOption())
                 : Task.FromResult(Option<B>.None);
+        }
+
+        [DebuggerStepThrough]
+        public static Task<Either<B, E>> Traverse<A, B, E>(this Either<A, E> either, Func<A, Task<B>> callback)
+        {
+            var thing = either.Select(callback);
+ 
+            return thing.IsSuccess
+                ? thing.AsSuccess.Value.Select(x => Either<B, E>.Create(x))
+                : Task.FromResult(Either<B,E>.CreateError(either.AsError.Value));
         }
     }
 }

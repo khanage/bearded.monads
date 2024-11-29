@@ -24,6 +24,50 @@ namespace Bearded.Monads.Tests
         }
 
         [Fact]
+        public async void SelectManyTry_Happy()
+        {
+            async Task<Try<int>> TryResult(int value)
+            {
+                return await Task.FromResult(value.AsTry());
+            }
+            
+            var expected = 20;
+
+            var actual = await (
+                from x in TryResult(10)
+                from y in TryResult(10)
+                select x + y
+            );
+
+            Assert.Equal(expected, actual.AsSuccess().Value);
+        }
+
+        [Fact]
+        public async void SelectManyTry_Error()
+        {
+            var executionCount = 0;
+
+            async Task<Try<int>> TryResult(int value)
+            {
+                executionCount++;
+                if (value > 10) 
+                    return new Exception("Failed");
+                
+                return await Task.FromResult(value.AsTry());
+            }
+            
+            var actual = await (
+                from x in TryResult(13)
+                from y in TryResult(10)
+                select x + y
+            );
+
+            Assert.True(actual.IsError);
+            Assert.Equal(1, executionCount);
+        }
+
+
+        [Fact]
         public async void Traverse_Happy()
         {
             var incoming = Enumerable.Range(1, 2);
@@ -34,6 +78,43 @@ namespace Bearded.Monads.Tests
             Assert.Equal(2, result.Count);
             Assert.Equal(20, result[0]);
             Assert.Equal(40, result[1]);
+        }
+        
+        [Fact]
+        public async void TraverseTry_Happy()
+        {
+            async Task<Try<int>> TryResult(int value)
+            {
+                return await Task.FromResult(value.AsTry());
+            }
+
+            var incoming = Enumerable.Range(1, 2);
+            var result = await incoming
+                .Traverse(i => TryResult(i * 20))
+                .Select(x => x.ToList());
+
+            var resultForce = result.AsSuccess().Value;
+            Assert.Equal(2, resultForce.Count);
+            Assert.Equal(20, resultForce[0]);
+            Assert.Equal(40, resultForce[1]);
+        }
+
+        [Fact]
+        public async void TraverseTry_Unhappy()
+        {
+            async Task<Try<int>> TryResult(int value)
+            {
+                if (value > 20)
+                    return new Exception("Failed");
+                return await Task.FromResult(value.AsTry());
+            }
+
+            var incoming = Enumerable.Range(1, 2);
+            var result = await incoming
+                .Traverse(i => TryResult(i * 20))
+                .Select(x => x.ToList());
+
+            Assert.True(result.IsError);
         }
 
         [Fact]

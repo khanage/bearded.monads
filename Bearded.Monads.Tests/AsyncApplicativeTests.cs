@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+#pragma warning disable CS0618
 using static Bearded.Monads.AsyncApplicative;
 
 namespace Bearded.Monads.Tests
@@ -100,8 +97,14 @@ namespace Bearded.Monads.Tests
 
             sw.Stop();
 
-            Assert.True(sw.ElapsedMilliseconds >= millisecondsPerCall, $"Took at least {millisecondsPerCall}ms");
-            Assert.True(sw.ElapsedMilliseconds <= millisecondsPerCall * 2, $"Took no longer than {millisecondsPerCall * 2}ms");
+            Assert.True(
+                sw.ElapsedMilliseconds >= millisecondsPerCall,
+                $"Took at least {millisecondsPerCall}ms"
+            );
+            Assert.True(
+                sw.ElapsedMilliseconds <= millisecondsPerCall * 2,
+                $"Took no longer than {millisecondsPerCall * 2}ms"
+            );
         }
 
         [Fact]

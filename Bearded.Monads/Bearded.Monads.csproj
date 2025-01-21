@@ -12,6 +12,7 @@
     <FileVersion>1.2.1.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../beard.jpg" Pack="true" PackagePath="/" />

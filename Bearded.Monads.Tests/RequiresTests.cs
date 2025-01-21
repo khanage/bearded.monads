@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
+﻿using System.Collections.Generic;
 using Xunit;
 
 namespace Bearded.Monads.Tests
@@ -57,7 +55,7 @@ namespace Bearded.Monads.Tests
             requires.Do(sideEffect.Add).Run(1);
 
             Assert.Contains(2, sideEffect);
-            Assert.Equal(1, sideEffect.Count);
+            Assert.Single(sideEffect);
         }
 
         [Fact]
@@ -68,11 +66,15 @@ namespace Bearded.Monads.Tests
             var sideEffect = new List<int>();
 
             var requires = Requires<int>.In(method);
-            requires.Do((i, j) =>
-            {
-                sideEffect.Add(i);
-                sideEffect.Add(j);
-            }).Run(1);
+            requires
+                .Do(
+                    (i, j) =>
+                    {
+                        sideEffect.Add(i);
+                        sideEffect.Add(j);
+                    }
+                )
+                .Run(1);
 
             Assert.Contains(1, sideEffect);
             Assert.Contains(2, sideEffect);

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bearded.Monads;
 using Xunit;
-using Xunit.Sdk;
 
+#pragma warning disable CS0618
 namespace Bearded.Monads.Tests
 {
     public class OptionUnsafeTests
@@ -36,7 +36,12 @@ namespace Bearded.Monads.Tests
             var option = OptionUnsafe<int>.None;
 
             Assert.False(option.IsSome);
-            Assert.Throws<InvalidOperationException>(delegate { var _ = option.ForceValue(); });
+            Assert.Throws<InvalidOperationException>(
+                delegate
+                {
+                    var _ = option.ForceValue();
+                }
+            );
         }
 
         [Fact]
@@ -362,7 +367,11 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void FirstOrDefaultFirstSome()
         {
-            var items = new List<OptionUnsafe<int>> { OptionUnsafe.Return(42), OptionUnsafe.Return(666) };
+            var items = new List<OptionUnsafe<int>>
+            {
+                OptionUnsafe.Return(42),
+                OptionUnsafe.Return(666),
+            };
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
@@ -372,7 +381,11 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void FirstOrDefaultSecondSome()
         {
-            var items = new List<OptionUnsafe<int>> { OptionUnsafe<int>.None, OptionUnsafe.Return(666) };
+            var items = new List<OptionUnsafe<int>>
+            {
+                OptionUnsafe<int>.None,
+                OptionUnsafe.Return(666),
+            };
             var result = items.FirstOrDefault();
 
             Assert.True(result.IsSome);
@@ -382,7 +395,11 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void FirstOrDefaultAllNone()
         {
-            var items = new List<OptionUnsafe<int>> { OptionUnsafe<int>.None, OptionUnsafe<int>.None };
+            var items = new List<OptionUnsafe<int>>
+            {
+                OptionUnsafe<int>.None,
+                OptionUnsafe<int>.None,
+            };
             var result = items.FirstOrDefault();
 
             Assert.False(result.IsSome);
@@ -468,14 +485,17 @@ namespace Bearded.Monads.Tests
 
             Assert.True(!result.IsSome);
         }
+
         [Fact]
         public void TryGetValuesForPresentKey()
         {
             var key = "hello";
             var expectedValues = new[] { 11, 42 };
 
-            var lookup = new[] { Tuple.Create("hello", 11), Tuple.Create("hello", 42) }
-                .ToLookup(t => t.Item1, t => t.Item2);
+            var lookup = new[] { Tuple.Create("hello", 11), Tuple.Create("hello", 42) }.ToLookup(
+                t => t.Item1,
+                t => t.Item2
+            );
 
             var result = lookup.MaybeGetValuesUnsafe(key);
 
@@ -488,8 +508,11 @@ namespace Bearded.Monads.Tests
         {
             var key = "hello";
 
-            var lookup = new[] { Tuple.Create("irrelevant", 11), Tuple.Create("irrelevant", 42) }
-               .ToLookup(t => t.Item1, t => t.Item2);
+            var lookup = new[]
+            {
+                Tuple.Create("irrelevant", 11),
+                Tuple.Create("irrelevant", 42),
+            }.ToLookup(t => t.Item1, t => t.Item2);
 
             var result = lookup.MaybeGetValuesUnsafe(key);
 
@@ -529,12 +552,18 @@ namespace Bearded.Monads.Tests
         {
             var some = new object().AsOptionUnsafe();
             var none = OptionUnsafe<object>.None;
-            Func<OptionUnsafe<object>> fail = () => { throw new Exception(); };
+            Func<OptionUnsafe<object>> fail = () =>
+            {
+                throw new Exception();
+            };
 
             // Does not throw doesn't have
             // an explicit operator
             var result = some | fail;
-            Assert.Throws<Exception>(() => { var bad = none | fail; });
+            Assert.Throws<Exception>(() =>
+            {
+                var bad = none | fail;
+            });
         }
 
         [Fact]
@@ -587,8 +616,7 @@ namespace Bearded.Monads.Tests
         {
             var some = 0.AsOptionUnsafe();
 
-            var result = await some.MapAsync(
-                async x => await Task.FromResult(x + 1));
+            var result = await some.MapAsync(async x => await Task.FromResult(x + 1));
 
             Assert.Equal(1.AsOptionUnsafe(), result);
         }
@@ -598,8 +626,7 @@ namespace Bearded.Monads.Tests
         {
             var none = OptionUnsafe<int>.None;
 
-            var result = await none.MapAsync(
-                async x => await Task.FromResult(x + 1));
+            var result = await none.MapAsync(async x => await Task.FromResult(x + 1));
 
             Assert.Equal(OptionUnsafe<int>.None, result);
         }
@@ -609,8 +636,7 @@ namespace Bearded.Monads.Tests
         {
             OptionUnsafe<object> none = null;
 
-            var result = await none.MapAsync(
-                async x => await Task.FromResult(0));
+            var result = await none.MapAsync(async x => await Task.FromResult(0));
 
             Assert.Equal(OptionUnsafe<int>.None, result);
         }
@@ -620,7 +646,8 @@ namespace Bearded.Monads.Tests
         {
             var input = Enumerable.Range(1, 10);
 
-            OptionUnsafe<int> isLessThan100(int i) => OptionUnsafe<int>.Return(i).Where(n => n < 100);
+            OptionUnsafe<int> isLessThan100(int i) =>
+                OptionUnsafe<int>.Return(i).Where(n => n < 100);
 
             var result = input.Traverse(isLessThan100);
 
@@ -632,7 +659,8 @@ namespace Bearded.Monads.Tests
         {
             var input = Enumerable.Range(100, 10);
 
-            OptionUnsafe<int> isLessThan100(int i) => OptionUnsafe<int>.Return(i).Where(n => n < 100);
+            OptionUnsafe<int> isLessThan100(int i) =>
+                OptionUnsafe<int>.Return(i).Where(n => n < 100);
 
             var result = input.Traverse(isLessThan100);
 
@@ -653,7 +681,10 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void Sequence_NotOk()
         {
-            var input = Enumerable.Range(1, 10).Select(OptionUnsafe.Return).Append(OptionUnsafe<int>.None);
+            var input = Enumerable
+                .Range(1, 10)
+                .Select(OptionUnsafe.Return)
+                .Append(OptionUnsafe<int>.None);
 
             var result = input.Sequence();
 

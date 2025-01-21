@@ -33,7 +33,8 @@ namespace Bearded.Monads
 
         public abstract A Else(A valueForNone);
 
-        public abstract Option<CastTarget> Cast<CastTarget>() where CastTarget : A;
+        public abstract Option<CastTarget> Cast<CastTarget>()
+            where CastTarget : A;
 
         public abstract bool Equals(A other);
 
@@ -43,9 +44,12 @@ namespace Bearded.Monads
         {
             switch (obj)
             {
-                case Option<A> option: return Equals(option);
-                case A a: return Equals(a);
-                default: return false;
+                case Option<A> option:
+                    return Equals(option);
+                case A a:
+                    return Equals(a);
+                default:
+                    return false;
             }
         }
 
@@ -87,7 +91,8 @@ namespace Bearded.Monads
 
             public override Option<B> Map<B>(Func<A, B> mapper) => mapper(force);
 
-            public override void Do(Action<A> valueCallback, Action nullCallback) => valueCallback(force);
+            public override void Do(Action<A> valueCallback, Action nullCallback) =>
+                valueCallback(force);
 
             public override A Else(Func<A> callbackForNone) => force;
 
@@ -107,8 +112,7 @@ namespace Bearded.Monads
 
             public override int GetHashCode() => force.GetHashCode();
 
-            public override string ToString()
-                => "Some(" + force + ")";
+            public override string ToString() => "Some(" + force + ")";
         }
 
         [DebuggerStepThrough]
@@ -150,8 +154,7 @@ namespace Bearded.Monads
 
             public override int GetHashCode() => 0;
 
-            public override string ToString()
-                => "None";
+            public override string ToString() => "None";
         }
     }
 }

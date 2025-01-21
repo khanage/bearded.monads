@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bearded.Monads;
 using Xunit;
-using Xunit.Sdk;
 
+#pragma warning disable CS0618
 namespace Bearded.Monads.Tests
 {
     public class OptionTests
@@ -26,7 +26,12 @@ namespace Bearded.Monads.Tests
             var option = Option<int>.None;
 
             Assert.False(option.IsSome);
-            Assert.Throws<InvalidOperationException>(delegate { var _ = option.ForceValue(); });
+            Assert.Throws<InvalidOperationException>(
+                delegate
+                {
+                    var _ = option.ForceValue();
+                }
+            );
         }
 
         [Fact]
@@ -330,10 +335,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void SelectManyBothSome()
         {
-            var result =
-                from a in Option.Return(21)
-                from b in Option.Return(21)
-                select a + b;
+            var result = from a in Option.Return(21) from b in Option.Return(21) select a + b;
 
             Assert.Equal(42, result.ForceValue());
         }
@@ -341,10 +343,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void SelectManyFirstNone()
         {
-            var result =
-                from a in Option<int>.None
-                from b in Option.Return(21)
-                select a + b;
+            var result = from a in Option<int>.None from b in Option.Return(21) select a + b;
 
             Assert.False(result.IsSome);
         }
@@ -352,10 +351,7 @@ namespace Bearded.Monads.Tests
         [Fact]
         public void SelectManySecondNone()
         {
-            var result =
-                from a in Option.Return(21)
-                from b in Option<int>.None
-                select a + b;
+            var result = from a in Option.Return(21) from b in Option<int>.None select a + b;
 
             Assert.False(result.IsSome);
         }
@@ -489,14 +485,17 @@ namespace Bearded.Monads.Tests
 
             Assert.True(!result.IsSome);
         }
+
         [Fact]
         public void TryGetValuesForPresentKey()
         {
             var key = "hello";
             var expectedValues = new[] { 11, 42 };
 
-            var lookup = new[] { Tuple.Create("hello", 11), Tuple.Create("hello", 42) }
-                .ToLookup(t => t.Item1, t => t.Item2);
+            var lookup = new[] { Tuple.Create("hello", 11), Tuple.Create("hello", 42) }.ToLookup(
+                t => t.Item1,
+                t => t.Item2
+            );
 
             var result = lookup.MaybeGetValues(key);
 
@@ -509,8 +508,11 @@ namespace Bearded.Monads.Tests
         {
             var key = "hello";
 
-            var lookup = new[] { Tuple.Create("irrelevant", 11), Tuple.Create("irrelevant", 42) }
-               .ToLookup(t => t.Item1, t => t.Item2);
+            var lookup = new[]
+            {
+                Tuple.Create("irrelevant", 11),
+                Tuple.Create("irrelevant", 42),
+            }.ToLookup(t => t.Item1, t => t.Item2);
 
             var result = lookup.MaybeGetValues(key);
 
@@ -542,7 +544,9 @@ namespace Bearded.Monads.Tests
         {
             var list = new[] { 1.AsOption(), 2.AsOption(), 3.AsOption() };
 
-            var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
+            var result = list.AggregateOrNone(
+                (total, current) => total.SelectMany(t => current.Map(c => t + c))
+            );
 
             Assert.Equal(6, result.ForceValue());
         }
@@ -552,7 +556,9 @@ namespace Bearded.Monads.Tests
         {
             var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
 
-            var result = list.AggregateOrNone((total, current) => total.SelectMany(t => current.Map(c => t + c)));
+            var result = list.AggregateOrNone(
+                (total, current) => total.SelectMany(t => current.Map(c => t + c))
+            );
 
             Assert.True(!result.IsSome);
         }
@@ -576,12 +582,16 @@ namespace Bearded.Monads.Tests
 
             Assert.True(!result.IsSome);
         }
+
         [Fact]
         public void AggregateWithOptionsAndSeed()
         {
             var list = new[] { 1.AsOption(), 2.AsOption(), 3.AsOption() };
 
-            var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
+            var result = list.AggregateOrNone(
+                10.AsOption(),
+                (total, current) => total.SelectMany(t => current.Map(c => t + c))
+            );
 
             Assert.Equal(16, result.ForceValue());
         }
@@ -591,10 +601,14 @@ namespace Bearded.Monads.Tests
         {
             var list = new[] { 1.AsOption(), Option<int>.None, 3.AsOption() };
 
-            var result = list.AggregateOrNone(10.AsOption(), (total, current) => total.SelectMany(t => current.Map(c => t + c)));
+            var result = list.AggregateOrNone(
+                10.AsOption(),
+                (total, current) => total.SelectMany(t => current.Map(c => t + c))
+            );
 
             Assert.True(!result.IsSome);
         }
+
         [Fact]
         public void ImplicitCastBool()
         {
@@ -628,12 +642,18 @@ namespace Bearded.Monads.Tests
         {
             var some = new object().AsOption();
             var none = Option<object>.None;
-            Func<Option<object>> fail = () => { throw new Exception(); };
+            Func<Option<object>> fail = () =>
+            {
+                throw new Exception();
+            };
 
             // Does not throw doesn't have
             // an explicit operator
             var result = some | fail;
-            Assert.Throws<Exception>(() => { var bad = none | fail; });
+            Assert.Throws<Exception>(() =>
+            {
+                var bad = none | fail;
+            });
         }
 
         [Fact]
@@ -686,8 +706,7 @@ namespace Bearded.Monads.Tests
         {
             var some = 0.AsOption();
 
-            var result = await some.MapAsync(
-                async x => await Task.FromResult(x + 1));
+            var result = await some.MapAsync(async x => await Task.FromResult(x + 1));
 
             Assert.Equal(1.AsOption(), result);
         }
@@ -697,8 +716,7 @@ namespace Bearded.Monads.Tests
         {
             var none = Option<int>.None;
 
-            var result = await none.MapAsync(
-                async x => await Task.FromResult(x + 1));
+            var result = await none.MapAsync(async x => await Task.FromResult(x + 1));
 
             Assert.Equal(Option<int>.None, result);
         }
@@ -708,8 +726,7 @@ namespace Bearded.Monads.Tests
         {
             Option<object> none = null;
 
-            var result = await none.MapAsync(
-                async x => await Task.FromResult(0));
+            var result = await none.MapAsync(async x => await Task.FromResult(0));
 
             Assert.Equal(Option<int>.None, result);
         }
@@ -770,9 +787,9 @@ namespace Bearded.Monads.Tests
         enum TestEnum
         {
             One = 1,
-            Two = 2
+            Two = 2,
         }
-        
+
         [Fact]
         public void EnumFromInt_Ok()
         {
@@ -780,7 +797,7 @@ namespace Bearded.Monads.Tests
             var expected = TestEnum.One;
 
             var actual = knownIndex.MaybeEnum<TestEnum>();
-            
+
             Assert.Equal(expected, actual);
         }
 
@@ -791,7 +808,7 @@ namespace Bearded.Monads.Tests
             var expected = Option<TestEnum>.None;
 
             var actual = knownBadIndex.MaybeEnum<TestEnum>();
-            
+
             Assert.Equal(expected, actual);
         }
 
